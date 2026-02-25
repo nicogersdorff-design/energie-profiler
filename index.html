@@ -1284,12 +1284,14 @@ Die E-Mail enthält jetzt:
 
     <script>
         // ============================================================
-        // EmailJS KONFIGURATION - TRAGEN SIE HIER IHRE KEYS EIN
+        // EmailJS KONFIGURATION - IHRE KEYS SIND BEREITS EINGETRAGEN
         // ============================================================
-        // 👇 Kopieren Sie Ihren Public Key von EmailJS hier ein:
         (function() {
-            emailjs.init("wPFHKOdC5Ozp7AuWM"); // ← z.B. "wPFHKOdC5Ozp7AuWM"
+            emailjs.init("wPFHKOdC5Ozp7AuWM"); // ✓ Ihr Public Key
         })();
+
+        const SERVICE_ID = "service_xoea2cq";   // ✓ Ihre Service ID
+        const TEMPLATE_ID = "template_fehq90l"; // ✓ Ihre Template ID
         // ============================================================   // Store results data globally
         let resultsData = null;
 
@@ -1307,103 +1309,77 @@ Die E-Mail enthält jetzt:
 
         async function handleEmailSubmit(event) {
             event.preventDefault();
-            console.log('handleEmailSubmit aufgerufen');
+            console.log('📧 E-Mail-Versand gestartet');
             
             const submitBtn = document.getElementById('submit-btn');
             const userName = document.getElementById('user-name').value.trim();
             const userEmail = document.getElementById('user-email').value.trim();
             const dataPrivacy = document.getElementById('privacy-accept').checked;
             const newsletterOptIn = document.getElementById('newsletter-opt-in').checked;
-            
-            console.log('Name:', userName, 'Email:', userEmail, 'Datenschutz:', dataPrivacy);
-            
-            // Validierung: Name, Email und Datenschutz erforderlich
+
+            // Validierung
             if (!userName || !userEmail || !dataPrivacy) {
                 alert('Bitte füllen Sie alle Pflichtfelder aus und akzeptieren Sie die Datenschutzerklärung.');
                 return;
             }
-            
-            // Button deaktivieren während Versand
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Wird gesendet...';
-            
+
             try {
-                // Energie-Index berechnen
                 const dysbalanceData = calculateDysbalanceIndex();
                 
-                // ============================================================
-                // DIMENSIONEN-DATEN FÜR STATISTIK VORBEREITEN
-                // ============================================================
-                // Erstelle detaillierte Liste aller Dimensionen mit Werten
+                // Detaillierte Liste der Dimensionen
                 let dimensionenListe = '';
+                const valuesArray = [];
+                
                 dimensions.forEach((dim, index) => {
                     const wert = answers[index];
                     const boxText = dim.boxes[wert - 1];
+                    valuesArray.push(wert);
                     dimensionenListe += `${index + 1}. ${dim.category}: ${wert}/5 (${boxText})\n`;
                 });
+
+                // REPORT-LINK GENERIEREN
+                const baseUrl = window.location.href.split('?')[0];
+                const reportLink = `${baseUrl}?results=${valuesArray.join(',')}`;
                 
-                // Erstelle auch Rohdaten-String für Excel-Import
-                const rohdaten = Object.keys(answers).map(key => answers[key]).join(',');
-                
-                // ============================================================
-                // EMAIL-PARAMETER ZUSAMMENSTELLEN
-                // ============================================================
-                
-                // Generiere Deep-Link zum Bericht
-                const reportLink = generateReportLink();
-                
+                console.log('🔗 Report-Link generiert:', reportLink);
+
+                // Rohdaten für Excel
+                const rohdatenCSV = valuesArray.join(',');
+
+                // E-Mail Parameter
                 const emailParams = {
-                    // Nutzer-Daten
                     user_name: userName,
                     user_email: userEmail,
                     newsletter: newsletterOptIn ? 'Ja' : 'Nein',
-                    
-                    // Ergebnis-Übersicht
                     energie_index: dysbalanceData.percentage + '%',
                     interpretation: dysbalanceData.interpretation,
-                    
-                    // Detaillierte Dimensionen-Daten
                     dimensionen_liste: dimensionenListe,
-                    
-                    // Rohdaten für Statistik (CSV-Format)
-                    rohdaten_csv: rohdaten,
-                    
-                    // Deep-Link zum Bericht (NEU!)
-                    report_link: reportLink,
-                    
-                    // Datum
+                    rohdaten_csv: rohdatenCSV,
+                    report_link: reportLink, // ← Deep-Link zum Bericht
                     datum: new Date().toLocaleDateString('de-DE'),
                     zeit: new Date().toLocaleTimeString('de-DE')
                 };
-                
-                console.log('Sende E-Mail mit Parametern:', emailParams);
-                
-                // ============================================================
-                // EMAILJS VERSENDEN - TRAGEN SIE HIER IHRE IDS EIN
-                // ============================================================
-                // 👇 Kopieren Sie Ihre Service ID und Template ID von EmailJS hier ein:
-                await emailjs.send(
-                    'service_xoea2cq',      // ← z.B. "service_xoea2cq"
-                    'template_fehq90l',     // ← z.B. "template_fehq90l"
-                    emailParams
-                );
+
+                console.log('📨 Sende E-Mail...');
+                await emailjs.send(SERVICE_ID, TEMPLATE_ID, emailParams);
                 
                 console.log('✅ E-Mail erfolgreich gesendet');
                 
-                // Modal schließen
                 closeEmailModal();
-                
-                // Erfolgsmeldung anzeigen
                 showSuccessMessage();
                 
             } catch (error) {
-                console.error('❌ EmailJS Fehler:', error);
-                alert('Es gab ein Problem beim Versenden. Bitte versuchen Sie es erneut oder kontaktieren Sie nico.gersdorff.coaching@gmail.com direkt.');
+                console.error('❌ Fehler beim Senden:', error);
+                alert('Es gab ein Problem beim Versenden. Bitte versuchen Sie es erneut.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'JETZT ANFORDERN';
             }
         }
+
 
         function showSuccessMessage() {
             // Erfolgsmeldung oberhalb des Berichts einfügen
@@ -1798,62 +1774,6 @@ Die E-Mail enthält jetzt:
             document.getElementById('progressFill').style.width = progress + '%';
         }
 
-
-        // ============================================================
-        // DEEP-LINK FUNKTION - URL-Parameter auslesen und laden
-        // ============================================================
-        function loadFromURLParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const resultsParam = urlParams.get('results');
-            
-            if (resultsParam) {
-                console.log('📊 Deep-Link erkannt, lade Ergebnisse aus URL...');
-                
-                // Parse die Ergebnisse (Format: "3,5,1,2,3,4,...")
-                const values = resultsParam.split(',').map(v => parseInt(v));
-                
-                // Validierung: Müssen 13 Werte sein
-                if (values.length === 13 && values.every(v => v >= 1 && v <= 5)) {
-                    // Setze die answers
-                    values.forEach((value, index) => {
-                        answers[index] = value;
-                    });
-                    
-                    // Verstecke Fragebogen und Hero
-                    document.querySelector('.questionnaire').style.display = 'none';
-                    document.querySelector('.hero-section').style.display = 'none';
-                    
-                    // Zeige Ergebnisse
-                    showResults();
-                    
-                    console.log('✅ Ergebnisse erfolgreich geladen:', answers);
-                    return true;
-                } else {
-                    console.warn('⚠️ Ungültige URL-Parameter (falsche Anzahl oder Werte außerhalb 1-5)');
-                }
-            }
-            return false;
-        }
-        
-        // ============================================================
-        // REPORT-LINK GENERIEREN
-        // ============================================================
-        function generateReportLink() {
-            // Hole die aktuelle URL ohne Parameter
-            const baseUrl = window.location.origin + window.location.pathname;
-            
-            // Erstelle results-Parameter aus answers
-            const resultsValues = Object.keys(answers)
-                .sort((a, b) => parseInt(a) - parseInt(b))
-                .map(key => answers[key])
-                .join(',');
-            
-            // Vollständiger Link mit Parametern
-            const reportLink = `${baseUrl}?results=${resultsValues}`;
-            
-            console.log('🔗 Report-Link generiert:', reportLink);
-            return reportLink;
-        }
 
         function showResults() {
             document.getElementById('questionnaire').style.display = 'none';
@@ -2902,16 +2822,37 @@ Die E-Mail enthält jetzt:
         // ============================================================
         // BEIM SEITENSTART: Prüfe auf URL-Parameter
         // ============================================================
-        window.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Seite geladen, prüfe auf Deep-Link...');
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const resultsParam = urlParams.get('results');
             
-            // Versuche URL-Parameter zu laden
-            const loadedFromURL = loadFromURLParams();
-            
-            if (!loadedFromURL) {
-                console.log('ℹ️ Keine URL-Parameter gefunden, normaler Fragebogen-Modus');
+            if (resultsParam) {
+                console.log('🔗 Deep-Link erkannt, lade Ergebnisse...');
+                const values = resultsParam.split(',').map(Number);
+                
+                // Validierung: 13 Werte, alle zwischen 1-5
+                if (values.length === dimensions.length && values.every(v => v >= 1 && v <= 5)) {
+                    // Ergebnisse direkt setzen
+                    answers = {};
+                    values.forEach((val, index) => { answers[index] = val; });
+                    
+                    // Fragebogen und Hero ausblenden
+                    document.getElementById('questionnaire').style.display = 'none';
+                    const heroSection = document.querySelector('.hero-section');
+                    if (heroSection) heroSection.style.display = 'none';
+                    
+                    // Ergebnisse anzeigen
+                    showResults();
+                    console.log('✅ Ergebnisse aus URL geladen');
+                } else {
+                    console.warn('⚠️ Ungültige URL-Parameter');
+                    renderQuestion(0); // Normaler Start - erste Frage
+                }
+            } else {
+                console.log('ℹ️ Normaler Start - kein Deep-Link');
+                renderQuestion(0); // Normaler Start - erste Frage
             }
-        });
+        };
 
     </script>
 
