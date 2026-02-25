@@ -1664,98 +1664,144 @@ Die E-Mail enthält jetzt:
 
 
         // ============================================================
-        // COACHING-IMPULSE FÜR PDF (Experten-Ratschläge)
+        // COACHING-IMPULSE FÜR PDF (Konditional + Coaching-Fragen)
         // ============================================================
         const coachingTexte = {
             0: { // Arbeitslast
-                low: "Unterforderung kann demotivierend wirken. Sprechen Sie mit Ihrer Führungskraft über anspruchsvollere Aufgaben oder Projekte.",
-                medium: "Gute Balance gefunden. Achten Sie darauf, diese zu erhalten und sprechen Sie frühzeitig an, wenn sich die Last erhöht.",
-                high: "Prioritäten setzen ist jetzt entscheidend. Identifizieren Sie die 20% der Aufgaben, die 80% des Impacts haben.",
-                extreme: "Sofortiger Handlungsbedarf! Delegieren Sie wo möglich, streichen Sie Nicht-Essentielles. Vereinbaren Sie ein Gespräch über realistische Arbeitsmengen."
+                kritisch: {
+                    text: "Ein dauerhaft hoher Workload kann langfristig zu Erschöpfung oder Burnout führen.",
+                    frage: "Welche zwei Aufgaben könnten wir sofort streichen oder delegieren, um Ihren Terminkalender zu entlasten?"
+                },
+                positiv: {
+                    text: "Ihre Arbeitslast scheint aktuell bewältigbar. Achten Sie auf Pufferzeiten für Unvorhergesehenes."
+                }
             },
             1: { // Führung & Support
-                low: "Fehlende Führung schafft Orientierungslosigkeit. Fordern Sie regelmäßige 1:1-Gespräche und klare Erwartungen ein.",
-                medium: "Solide Basis vorhanden. Nutzen Sie Ihre Führungskraft als Sparringspartner für strategische Fragen.",
-                high: "Gute Führung ist ein Asset. Schützen Sie diese Ressource durch offene Kommunikation.",
-                extreme: "Starke Überbehütung kann einengen. Kommunizieren Sie Ihren Wunsch nach mehr Eigenverantwortung."
+                kritisch: {
+                    text: "Fehlender Rückhalt oder Mikromanagement kann Ihre Energie im Alltag massiv einschränken.",
+                    frage: "Welches konkrete Gespräch mit Ihrer Führungskraft würde jetzt die größte Entlastung bringen?"
+                },
+                positiv: {
+                    text: "Sie fühlen sich gut unterstützt – eine wichtige Basis für Ihre langfristige Leistungsfähigkeit."
+                }
             },
             2: { // Arbeitsfluss
-                low: "Ständige Unterbrechungen kosten bis zu 40% Produktivität. Etablieren Sie fokussierte Zeitblöcke (z.B. Deep Work morgens).",
-                medium: "Flow-Momente sind möglich. Schützen Sie diese Phasen durch bewusste Verfügbarkeitssteuerung.",
-                high: "Optimale Bedingungen. Dokumentieren Sie, was funktioniert, um diese Muster zu festigen.",
-                extreme: "Zu viel Isolation kann schaden. Stellen Sie sicher, dass Sie trotzdem im Austausch bleiben."
+                kritisch: {
+                    text: "Ständige Unterbrechungen können verhindern, dass Sie in einen produktiven Fokus kommen.",
+                    frage: "Wie könnten Sie in Ihrem Arbeitsalltag eine tägliche 'stille Stunde' ohne E-Mails und Telefon etablieren?"
+                },
+                positiv: {
+                    text: "Ihr Workflow ist stabil. Bewahren Sie sich diese wertvollen Konzentrationsphasen."
+                }
             },
             3: { // Sinn & Potenzial
-                low: "Sinn-Vakuum ist ein starker Demotivator. Reflektieren Sie: Welche Aspekte Ihrer Arbeit sind intrinsisch wertvoll für Sie?",
-                medium: "Grundlegende Verbindung vorhanden. Verstärken Sie die sinnstiftenden Elemente bewusst.",
-                high: "Starke Sinn-Resonanz. Dies ist Ihr Energie-Tank - schützen und pflegen Sie ihn.",
-                extreme: "Übermäßige Identifikation kann zu Burn-out führen. Etablieren Sie auch Sinn außerhalb der Arbeit."
+                kritisch: {
+                    text: "Wenn der Sinn Ihrer Arbeit fehlt, kann Ihre Energie trotz Pausen stetig sinken.",
+                    frage: "Welche Ihrer persönlichen Stärken kommt in Ihrem aktuellen Job zu kurz?"
+                },
+                positiv: {
+                    text: "Sie sehen den Wert Ihrer Arbeit. Das ist der stärkste Motor für nachhaltige Energie."
+                }
             },
             4: { // Prioritäten & Klarheit
-                low: "Unklare Prioritäten führen zu reaktivem Arbeiten. Etablieren Sie ein wöchentliches Prioritäten-Review.",
-                medium: "Grundrichtung ist klar. Verfeinern Sie Ihre Priorisierungs-Kriterien kontinuierlich.",
-                high: "Kristallklare Ausrichtung. Nutzen Sie diese Klarheit, um Nein zu Ablenkungen zu sagen.",
-                extreme: "Zu starre Fokussierung kann Chancen verpassen lassen. Bleiben Sie auch offen für Unerwartetes."
+                kritisch: {
+                    text: "Unklare Ziele können massiven Stress und das Gefühl von Sinnlosigkeit erzeugen.",
+                    frage: "Was ist das eine übergeordnete Ziel, auf das Sie sich heute fokussieren müssen?"
+                },
+                positiv: {
+                    text: "Sie wissen, was zu tun ist. Diese Klarheit schützt Sie vor unnötigem Aktionismus."
+                }
             },
             5: { // Gestaltungsspielraum
-                low: "Fehlende Autonomie ist Top-Stressfaktor. Identifizieren Sie kleine Bereiche, wo Sie Entscheidungen übernehmen können.",
-                medium: "Gesunde Balance zwischen Vorgaben und Freiraum. Nutzen Sie Ihre Autonomie bewusst.",
-                high: "Viel Gestaltungsfreiheit. Ein Privileg und eine Verantwortung - nutzen Sie es weise.",
-                extreme: "Zu viel Freiheit ohne Struktur kann überfordern. Schaffen Sie sich selbst Leitplanken."
+                kritisch: {
+                    text: "Zu wenig Einfluss auf die eigenen Aufgaben kann zu Frust und innerer Kündigung führen.",
+                    frage: "In welchem kleinen Bereich könnten Sie sich heute mehr Eigenverantwortung zurückholen?"
+                },
+                positiv: {
+                    text: "Sie nutzen Ihren Spielraum gut. Das fördert Ihre Motivation und Kreativität."
+                }
             },
             6: { // Wertschätzung
-                low: "Mangelnde Anerkennung nagt an Motivation. Machen Sie Ihre Erfolge sichtbar und fordern Sie Feedback ein.",
-                medium: "Angemessene Wertschätzung vorhanden. Kultivieren Sie auch Selbstwertschätzung.",
-                high: "Sie werden gut gesehen. Geben Sie diese Wertschätzung auch an andere weiter.",
-                extreme: "Übermäßiges Lob kann unaufrichtig wirken. Achten Sie auf die Substanz dahinter."
+                kritisch: {
+                    text: "Mangelnde Anerkennung kann auf Dauer Ihre Motivation untergraben.",
+                    frage: "Von wem würde Ihnen echte Wertschätzung am meisten bedeuten – und wie könnten Sie das ansprechen?"
+                },
+                positiv: {
+                    text: "Sie fühlen sich wertgeschätzt. Das ist ein wichtiger Energiespender im Arbeitsalltag."
+                }
             },
             7: { // Komplexität
-                low: "Unterforderung lässt Potenziale ungenutzt. Suchen Sie nach komplexeren Herausforderungen.",
-                medium: "Angemessene Komplexität hält Sie engagiert ohne zu überfordern. Optimale Lernzone.",
-                high: "Hohe Anforderungen sind Wachstumschancen. Strukturieren Sie Komplexes in handhabbare Teile.",
-                extreme: "Überkomplexität lähmt. Holen Sie sich Unterstützung, delegieren Sie, vereinfachen Sie wo möglich."
+                kritisch: {
+                    text: "Technische Hürden oder zu komplexe Prozesse können Ihre wertvolle Zeit unnötig binden.",
+                    frage: "Welches Tool oder welcher Prozess nervt Sie am meisten – und wie sähe eine einfache Lösung aus?"
+                },
+                positiv: {
+                    text: "Die Technik unterstützt Sie. Ein guter Hebel für Ihre Produktivität."
+                }
             },
             8: { // Soziale Einbindung
-                low: "Isolation ist Gesundheitsrisiko. Initiieren Sie aktiv soziale Kontakte, auch virtuell.",
-                medium: "Gesunde soziale Balance. Pflegen Sie diese Beziehungen kontinuierlich.",
-                high: "Starkes Netzwerk. Dies ist Ihr Puffer in Stress-Zeiten - investieren Sie weiter.",
-                extreme: "Zu viel Soziales kann erschöpfen. Schützen Sie auch Ihre Rückzugszeiten."
+                kritisch: {
+                    text: "Ungelöste Konflikte im Team können eine enorme psychische Belastung darstellen.",
+                    frage: "Mit welcher Person im Team sollten Sie zeitnah ein klärendes Kaffee-Gespräch führen?"
+                },
+                positiv: {
+                    text: "Ein gutes Team fängt Stress auf. Pflegen Sie diese wichtigen sozialen Kontakte."
+                }
             },
             9: { // Vertrauensvolles Miteinander
-                low: "Misstrauen vergiftet die Atmosphäre. Beginnen Sie mit kleinen Vertrauensvorschüssen.",
-                medium: "Grundvertrauen ist da. Stärken Sie es durch Verlässlichkeit und Offenheit.",
-                high: "Psychologische Sicherheit vorhanden. Ein unschätzbarer Vorteil für Innovation.",
-                extreme: "Blindes Vertrauen kann naiv sein. Bleiben Sie wachsam für Warnsignale."
+                kritisch: {
+                    text: "Fehlendes Vertrauen kann die Zusammenarbeit erheblich erschweren und Energie kosten.",
+                    frage: "Welcher kleine Vertrauensvorschuss könnte heute die Atmosphäre im Team verbessern?"
+                },
+                positiv: {
+                    text: "Das Vertrauen im Team trägt Sie. Eine solide Grundlage für gute Zusammenarbeit."
+                }
             },
             10: { // Regeneration
-                low: "Fehlende Erholung führt zu Erschöpfungsspirale. Etablieren Sie non-negotiable Regenerations-Rituale.",
-                medium: "Grundlegende Erholung vorhanden. Optimieren Sie Qualität über Quantität.",
-                high: "Exzellente Work-Life-Balance. Sie haben verstanden, dass Pausen Produktivität steigern.",
-                extreme: "Zu viel Freizeit kann auch Unzufriedenheit schaffen. Achten Sie auf sinnvolle Aktivität."
+                kritisch: {
+                    text: "Wenn Sie nach Feierabend gedanklich nicht abschalten können, kann die notwendige Erholung ausbleiben.",
+                    frage: "Welches Ritual könnte Ihnen heute helfen, die Arbeit symbolisch im Büro zu lassen?"
+                },
+                positiv: {
+                    text: "Sie nutzen Ihre Freizeit effektiv. Das sichert Ihre Leistungsfähigkeit für morgen."
+                }
             },
             11: { // Körperliche Signale
-                low: "Ihr Körper sendet Alarmsignale. Nehmen Sie diese ernst - sie sind Frühwarnsystem.",
-                medium: "Stabile körperliche Verfassung. Nutzen Sie präventive Gesundheitsmaßnahmen.",
-                high: "Optimale Vitalität. Sie investieren klug in Ihre wichtigste Ressource: Gesundheit.",
-                extreme: "Übertriebener Gesundheitsfokus kann auch Stress erzeugen. Finden Sie eine entspannte Achtsamkeit."
+                kritisch: {
+                    text: "Körperliche Symptome können ernsthafte Warnsignale für eine Überlastung sein.",
+                    frage: "Was will Ihr Körper Ihnen mit dem aktuellen Signal sagen, wenn Sie ganz ehrlich zu sich sind?"
+                },
+                positiv: {
+                    text: "Sie fühlen sich körperlich fit. Achten Sie weiterhin auf diese Signale."
+                }
             },
             12: { // Lebenskontext & Care-Arbeit
-                low: "Private Belastungen summieren sich. Organisieren Sie Entlastung, delegieren Sie, bitten Sie um Hilfe.",
-                medium: "Privates ist im Gleichgewicht. Schützen Sie diese Balance aktiv.",
-                high: "Erfüllendes Privatleben gibt Energie. Ein starkes Fundament für berufliche Herausforderungen.",
-                extreme: "Zu viele private Verpflichtungen können auslauge. Prüfen Sie, wo Sie vereinfachen können."
+                kritisch: {
+                    text: "Hohe private Belastungen können dazu führen, dass kein Raum mehr für die eigene Regeneration bleibt.",
+                    frage: "An welcher Stelle im Privaten könnten Sie um Hilfe bitten, um sich selbst eine Stunde Freiraum zu schaffen?"
+                },
+                positiv: {
+                    text: "Ihr Privatleben bietet Ihnen den nötigen Ausgleich zum Job."
+                }
             }
         };
+
+        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
+        function getCoachingText(dimensionIndex, wert) {        };
 
         // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
         function getCoachingText(dimensionIndex, wert) {
             const texte = coachingTexte[dimensionIndex];
             if (!texte) return null;
             
-            if (wert <= 2) return texte.low;
-            else if (wert === 3) return texte.medium;
-            else if (wert === 4) return texte.high;
-            else return texte.extreme;  // 5
+            // Wert 4-5 = kritisch (mit Frage), sonst positiv
+            if (wert >= 4) {
+                return texte.kritisch;  // Objekt mit {text, frage}
+            } else if (wert <= 2) {
+                return texte.kritisch;  // Bei Mangel auch kritisch
+            } else {
+                return texte.positiv;   // Objekt mit {text}
+            }
         }
 
         let currentQuestion = 0;
@@ -1915,6 +1961,7 @@ Die E-Mail enthält jetzt:
             renderDysbalanceScore();
             renderRadarChart();
             renderRiskAnalysis();
+            renderCoachingImpulse();  // Zeige Coaching-Impulse
             renderDimensionsDetails();
         }
 
@@ -2160,6 +2207,113 @@ Die E-Mail enthält jetzt:
             
             container.innerHTML = riskHTML;
         }
+
+
+        // ============================================================
+        // COACHING-IMPULSE AUF DER WEB-SEITE ANZEIGEN
+        // ============================================================
+        function renderCoachingImpulse() {
+            const resultsContainer = document.querySelector('.results-container');
+            if (!resultsContainer) return;
+            
+            // Prüfe ob bereits angezeigt
+            if (document.getElementById('coaching-impulse')) return;
+            
+            console.log('📋 Rendere Coaching-Impulse...');
+            
+            let html = `
+                <div id="coaching-impulse" style="background: var(--white); border-radius: 8px; 
+                     padding: 2rem; margin-top: 2rem; box-shadow: 0 4px 20px var(--shadow);">
+                    <h2 style="color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 1.5rem;">
+                        Ihre persönlichen Coaching-Impulse
+                    </h2>
+                    <p style="color: var(--text-light); margin-bottom: 2rem; font-size: 0.95rem;">
+                        Basierend auf Ihren Antworten haben wir für Sie individuelle Reflexionsfragen zusammengestellt.
+                    </p>
+            `;
+            
+            // Gehe durch alle Dimensionen
+            dimensions.forEach((dim, index) => {
+                const wert = answers[index];
+                if (wert === 3) return;  // Optimale Werte überspringen
+                
+                const coaching = getCoachingText(index, wert);
+                if (!coaching) return;
+                
+                const istKritisch = (wert >= 4 || wert <= 2);
+                
+                // Dimension-Card
+                html += `
+                    <div style="background: ${istKritisch ? '#FFF8DC' : '#F0FFF0'}; 
+                         border-left: 4px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
+                         border-radius: 6px; padding: 1.2rem; margin-bottom: 1.5rem;">
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
+                            <span style="font-size: 1.2rem; margin-right: 0.5rem;">
+                                ${istKritisch ? '⚠️' : '✓'}
+                            </span>
+                            <h3 style="color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; 
+                                 font-size: 1.1rem; margin: 0; font-weight: 600;">
+                                ${dim.category}
+                            </h3>
+                            <span style="margin-left: auto; background: ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
+                                 color: white; padding: 0.2rem 0.6rem; border-radius: 12px; 
+                                 font-size: 0.85rem; font-weight: 600;">
+                                Wert: ${wert}
+                            </span>
+                        </div>
+                        
+                        <p style="color: #3C3C3C; margin-bottom: ${coaching.frage ? '1rem' : '0'}; 
+                             line-height: 1.6; font-size: 0.95rem;">
+                            ${coaching.text}
+                        </p>
+                        
+                        ${coaching.frage ? `
+                            <div style="background: white; border-left: 3px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
+                                 padding: 0.8rem 1rem; border-radius: 4px; margin-top: 1rem;">
+                                <p style="color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; 
+                                     font-style: italic; margin: 0; font-size: 0.9rem; font-weight: 500;">
+                                    <strong>Coaching-Frage:</strong><br>
+                                    ${coaching.frage}
+                                </p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `
+                <div style="background: #F8F9FA; border-radius: 6px; padding: 1rem; margin-top: 2rem; 
+                     border: 1px solid #DEE2E6;">
+                    <p style="color: #6C757D; margin: 0; font-size: 0.9rem; text-align: center;">
+                        💡 Diese Impulse sind Denkanstöße für Ihre persönliche Reflexion. 
+                        Im persönlichen Coaching-Gespräch entwickeln wir gemeinsam konkrete Handlungsschritte.
+                    </p>
+                </div>
+            </div>
+            `;
+            
+            // Füge nach Risk-Check ein
+            const riskCheck = document.getElementById('risk-indicator');
+            if (riskCheck && riskCheck.nextSibling) {
+                riskCheck.parentNode.insertBefore(
+                    createElementFromHTML(html),
+                    riskCheck.nextSibling
+                );
+            } else {
+                resultsContainer.insertAdjacentHTML('beforeend', html);
+            }
+            
+            console.log('✅ Coaching-Impulse angezeigt');
+        }
+        
+        // Hilfsfunktion: HTML-String in Element umwandeln
+        function createElementFromHTML(htmlString) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlString.trim();
+            return div.firstChild;
+        }
+
 
         function renderDimensionsDetails() {
             const container = document.getElementById('dimensionsDetails');
