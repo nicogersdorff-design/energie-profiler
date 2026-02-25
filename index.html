@@ -1348,6 +1348,10 @@ Die E-Mail enthält jetzt:
                 // ============================================================
                 // EMAIL-PARAMETER ZUSAMMENSTELLEN
                 // ============================================================
+                
+                // Generiere Deep-Link zum Bericht
+                const reportLink = generateReportLink();
+                
                 const emailParams = {
                     // Nutzer-Daten
                     user_name: userName,
@@ -1363,6 +1367,9 @@ Die E-Mail enthält jetzt:
                     
                     // Rohdaten für Statistik (CSV-Format)
                     rohdaten_csv: rohdaten,
+                    
+                    // Deep-Link zum Bericht (NEU!)
+                    report_link: reportLink,
                     
                     // Datum
                     datum: new Date().toLocaleDateString('de-DE'),
@@ -1789,6 +1796,63 @@ Die E-Mail enthält jetzt:
         function updateProgress() {
             const progress = (Object.keys(answers).length / dimensions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+
+        // ============================================================
+        // DEEP-LINK FUNKTION - URL-Parameter auslesen und laden
+        // ============================================================
+        function loadFromURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const resultsParam = urlParams.get('results');
+            
+            if (resultsParam) {
+                console.log('📊 Deep-Link erkannt, lade Ergebnisse aus URL...');
+                
+                // Parse die Ergebnisse (Format: "3,5,1,2,3,4,...")
+                const values = resultsParam.split(',').map(v => parseInt(v));
+                
+                // Validierung: Müssen 13 Werte sein
+                if (values.length === 13 && values.every(v => v >= 1 && v <= 5)) {
+                    // Setze die answers
+                    values.forEach((value, index) => {
+                        answers[index] = value;
+                    });
+                    
+                    // Verstecke Fragebogen und Hero
+                    document.querySelector('.questionnaire').style.display = 'none';
+                    document.querySelector('.hero-section').style.display = 'none';
+                    
+                    // Zeige Ergebnisse
+                    showResults();
+                    
+                    console.log('✅ Ergebnisse erfolgreich geladen:', answers);
+                    return true;
+                } else {
+                    console.warn('⚠️ Ungültige URL-Parameter (falsche Anzahl oder Werte außerhalb 1-5)');
+                }
+            }
+            return false;
+        }
+        
+        // ============================================================
+        // REPORT-LINK GENERIEREN
+        // ============================================================
+        function generateReportLink() {
+            // Hole die aktuelle URL ohne Parameter
+            const baseUrl = window.location.origin + window.location.pathname;
+            
+            // Erstelle results-Parameter aus answers
+            const resultsValues = Object.keys(answers)
+                .sort((a, b) => parseInt(a) - parseInt(b))
+                .map(key => answers[key])
+                .join(',');
+            
+            // Vollständiger Link mit Parametern
+            const reportLink = `${baseUrl}?results=${resultsValues}`;
+            
+            console.log('🔗 Report-Link generiert:', reportLink);
+            return reportLink;
         }
 
         function showResults() {
@@ -2833,6 +2897,22 @@ Die E-Mail enthält jetzt:
         }
         
         loadFromURLParams();
+    
+
+        // ============================================================
+        // BEIM SEITENSTART: Prüfe auf URL-Parameter
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Seite geladen, prüfe auf Deep-Link...');
+            
+            // Versuche URL-Parameter zu laden
+            const loadedFromURL = loadFromURLParams();
+            
+            if (!loadedFromURL) {
+                console.log('ℹ️ Keine URL-Parameter gefunden, normaler Fragebogen-Modus');
+            }
+        });
+
     </script>
 
     <!-- Email Modal -->
