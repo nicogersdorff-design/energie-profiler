@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energie-Profiler - Vitalitäts-Check</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #E85C33;
+            --primary-blue: #4A5D7C;
+            --accent-purple: #8B6B9E;
+            --text-dark: #2C3E50;
+            --text-light: #6C757D;
+            --bg-light: #F8F9FA;
+            --white: #FFFFFF;
+            --border: #DEE2E6;
+            --shadow: rgba(74, 93, 124, 0.15);
+            --orange-light: #FF7A59;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #faf8f5 0%, #f0ede7 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+            padding: 16px 20px 12px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.0625rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 650px;
+            margin: 0 auto 12px;
+        }
+
+        .intro-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin: 16px 0 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .question-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 16px var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            margin-bottom: 32px;
+        }
+
+        .question-number {
+            font-size: 0.875rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .question-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .question-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1200px) {
+            .options-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .options-container > .option-box:nth-child(4),
+            .options-container > .option-box:nth-child(5) {
+                grid-column: span 1;
+            }
+            
+            .score-display {
+                flex-direction: column;
+                gap: 24px;
+            }
+            
+            .score-interpretation {
+                text-align: center;
+            }
+            
+            .score-bar-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .option-box {
+                min-height: auto;
+                padding: 20px 16px;
+            }
+            
+            .option-text {
+                font-size: 0.875rem;
+            }
+            
+            .score-circle {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .score-percentage {
+                font-size: 2.5rem;
+            }
+            
+            .interpretation-title {
+                font-size: 1.5rem;
+            }
+            
+            .score-bar {
+                height: 30px;
+            }
+            
+            .score-marker {
+                height: 46px;
+                top: -8px;
+            }
+            
+            .score-bar-labels {
+                font-size: 0.65rem;
+            }
+        }
+
+        .option-box {
+            position: relative;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 24px 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Farbcodierung nach Position */
+        .option-box[data-value="1"],
+        .option-box[data-value="5"] {
+            background: linear-gradient(135deg, #fff5e6, #ffffff);
+            border-color: #f4a261;
+        }
+
+        .option-box[data-value="2"],
+        .option-box[data-value="4"] {
+            background: linear-gradient(135deg, #fffef0, #ffffff);
+            border-color: #f4c574;
+        }
+
+        .option-box[data-value="3"] {
+            background: linear-gradient(135deg, #e8f5f0, #ffffff);
+            border: 3px solid #40916C;
+            border-color: #40916C;
+        }
+
+        .option-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        /* Selected States mit intensiveren Farben */
+        .option-box.selected[data-value="1"],
+        .option-box.selected[data-value="5"] {
+            background: linear-gradient(135deg, #f4a261, #e76f51);
+            border-color: #e76f51;
+            color: white;
+            box-shadow: 0 8px 32px rgba(231, 111, 81, 0.3);
+        }
+
+        .option-box.selected[data-value="2"],
+        .option-box.selected[data-value="4"] {
+            background: linear-gradient(135deg, #f4c574, #e8a43f);
+            border-color: #e8a43f;
+            color: white;
+            box-shadow: 0 8px 32px rgba(232, 164, 63, 0.3);
+        }
+
+        .option-box.selected[data-value="3"] {
+            background: linear-gradient(135deg, #40916C, #1F4D3A);
+            border-color: #40916C;
+            color: white;
+            box-shadow: 0 8px 32px rgba(45, 106, 79, 0.3);
+        }
+
+        .option-box.target::before {
+            content: "★";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .option-text {
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .option-box.selected .option-text {
+            color: white;
+        }
+
+        .pole-labels {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 16px;
+            padding: 0 8px;
+            align-items: center;
+        }
+
+        .pole-label {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .pole-label.left { 
+            text-align: right;
+            color: #f4a261;
+            font-weight: 600;
+        }
+        
+        .pole-label.center {
+            background: linear-gradient(135deg, rgba(45, 95, 79, 0.15), rgba(45, 95, 79, 0.05));
+            border: 2px solid var(--primary);
+            font-weight: 700;
+            color: var(--primary);
+            padding: 12px 24px;
+            box-shadow: 0 2px 8px rgba(45, 95, 79, 0.1);
+        }
+        
+        .pole-label.right { 
+            text-align: left;
+            color: #f4a261;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: space-between;
+            margin-top: 32px;
+        }
+
+        button {
+            padding: 18px 40px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: #E85C33;
+            color: #FFFFFF;
+            flex: 1;
+            max-width: 250px;
+            box-shadow: 0 6px 20px rgba(232, 92, 51, 0.5);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(232, 92, 51, 0.6);
+            background: #d14d28;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-container {
+            display: none;
+            animation: slideIn 0.5s forwards;
+        }
+
+        .results-header {
+            text-align: center;
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 48px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+
+        .results-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+        }
+
+        .results-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-container {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 48px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            margin-top: 32px;
+            padding: 20px;
+            background: linear-gradient(135deg, #faf8f5, #ffffff);
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.875rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend-dot.red { background: #e63946; }
+        .legend-dot.orange { background: #f4a261; }
+        .legend-dot.green { background: #40916C; }
+
+        .dysbalance-score {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+            text-align: center;
+        }
+
+        .score-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 24px;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-family: 'Montserrat', sans-serif;
+            border: 8px solid;
+            position: relative;
+            background: white;
+        }
+
+        .score-percentage {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        .score-bar-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 24px auto;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(to right, 
+                rgb(45, 95, 79) 0%,
+                rgb(244, 164, 63) 30%,
+                rgb(244, 162, 97) 50%,
+                rgb(230, 57, 70) 70%,
+                rgb(200, 20, 40) 100%
+            );
+            border-radius: 20px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-marker {
+            position: absolute;
+            top: -8px;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 56px;
+            background: white;
+            border: 3px solid #2a2a2a;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .score-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .score-interpretation {
+            flex: 1;
+            text-align: left;
+            max-width: 400px;
+        }
+
+        .interpretation-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .interpretation-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .risk-analysis {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 48px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+
+        .risk-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .risk-indicator {
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border-left: 6px solid;
+        }
+
+        .risk-indicator.bore-out {
+            background: linear-gradient(135deg, rgba(91, 143, 168, 0.1), rgba(91, 143, 168, 0.05));
+            border-color: var(--warning-bore);
+        }
+
+        .risk-indicator.burn-out {
+            background: linear-gradient(135deg, rgba(200, 90, 84, 0.1), rgba(200, 90, 84, 0.05));
+            border-color: var(--warning-burn);
+        }
+
+        .risk-indicator.balanced {
+            background: linear-gradient(135deg, rgba(45, 95, 79, 0.1), rgba(45, 95, 79, 0.05));
+            border-color: var(--primary);
+        }
+
+        .risk-indicator h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .risk-indicator.bore-out h3 { color: var(--warning-bore); }
+        .risk-indicator.burn-out h3 { color: var(--warning-burn); }
+        .risk-indicator.balanced h3 { color: var(--primary); }
+
+        .dimensions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .dimension-card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 16px var(--shadow);
+        }
+
+        .dimension-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .dimension-value {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .dimension-analysis {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .coaching-questions {
+            background: linear-gradient(135deg, #f9f7f4, #ffffff);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+
+        .coaching-questions h4 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .coaching-questions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .coaching-questions li {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .coaching-questions li::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .export-button {
+            display: block;
+            margin: 40px auto;
+            padding: 20px 48px;
+            font-size: 1.125rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-orange), var(--orange-light));
+            color: white;
+            box-shadow: 0 4px 12px rgba(232, 92, 51, 0.3);
+        }
+
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(232, 92, 51, 0.5);
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .export-button {
+                display: none;
+            }
+        }
+
+        /* Email Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #FFFFFF;
+            opacity: 1;
+            border-radius: 12px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: modalSlideIn 0.3s ease-out;
+            position: relative;
+            z-index: 10000;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: #6C757D;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #4A5D7C;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: 'Open Sans', sans-serif;
+            transition: border-color 0.3s ease;
+            background: #FFFFFF;
+            color: #2C3E50;
+        }
+
+        .form-input::placeholder {
+            color: #6C757D;
+            opacity: 1;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #40916C;
+            box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.1);
+        }
+
+        .form-checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .form-checkbox label {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            line-height: 1.5;
+            cursor: pointer;
+        }
+
+        .form-checkbox label a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.cancel {
+            background: var(--border);
+            color: var(--text-dark);
+        }
+
+        .modal-btn.cancel:hover {
+            background: #c0c4c8;
+        }
+
+        .modal-btn.submit {
+            background: #40916C;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-btn.submit:hover {
+            background: #40916C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(64, 145, 108, 0.4);
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            display: none;
+            color: #e63946;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            /* Hide everything except results */
+            header,
+            footer,
+            .question-card,
+            .nav-buttons,
+            .progress-bar,
+            .modal-overlay,
+            .export-button,
+            .action-buttons,
+            .no-print,
+            #questionnaire,
+            #email-modal,
+            button,
+            .btn,
+            .btn-primary,
+            .btn-secondary,
+            .coaching-teaser,
+            #success-message {
+                display: none !important;
+                visibility: hidden !important;
+            }
+
+            /* Show coaching questions for print (Coach) */
+            .coaching-questions {
+                display: block !important;
+                visibility: visible !important;
+            }
+
+            /* Show only results */
+            .results-container {
+                display: block !important;
+                visibility: visible !important;
+                margin: 0;
+                padding: 20px;
+                position: relative;
+                z-index: 1;
+            }
+
+            /* Page setup */
+            body {
+                background: white !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+                border-radius: 0;
+                background: white;
+            }
+
+            /* Prevent page breaks inside elements */
+            .dimension-card,
+            .risk-indicator,
+            .report-box,
+            .dimension-analysis,
+            .coaching-questions {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            /* Force page break before major sections */
+            .handlungsfelder-section {
+                break-before: page;
+                page-break-before: always;
+            }
+
+            /* Ensure headings stay with content */
+            h2, h3 {
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            /* Colors for print */
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Energie-Profiler</h1>
+            <p class="subtitle">Ihr Vitalitäts-Check in 13 Dimensionen.</p>
+            <p class="intro-text">Diese Analyse deckt auf, wie effizient Ihr System arbeitet. Identifizieren Sie Ihre 'Flow-Zonen' und finden Sie heraus, wo Sie wertvolle Energie durch Dauerstress verlieren oder durch mangelnde Impulse innerlich leerlaufen.</p>
+        </header>
+
+        <div id="questionnaire">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div id="questionContainer"></div>
+        </div>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h2 class="results-title">Ihre Auswertung</h2>
+                <p class="results-subtitle">Analyse Ihrer beruflichen Balance-Situation</p>
+            </div>
+
+            <div class="dysbalance-score" id="dysbalanceScore"></div>
+
+            <div class="chart-container">
+                <h3 style="text-align: center; font-family: 'Montserrat', sans-serif; font-size: 1.5rem; margin-bottom: 32px; color: var(--primary-dark);">Ihr Profil im Überblick</h3>
+                <div class="chart-wrapper">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <div class="legend-dot green"></div>
+                        <span>Balance (Wert 3)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot orange"></div>
+                        <span>Leichte Abweichung (Werte 2, 4)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot red"></div>
+                        <span>Kritische Abweichung (Werte 1, 5)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-analysis" id="riskAnalysis"></div>
+
+            <div id="dimensionsDetails"></div>
+
+            <button class="export-button" onclick="openEmailModal()">
+                📧 PDF erhalten
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("wPFHKOdC5Ozp7AuWM"); // EmailJS Public Key
+        })();
+
+        // Store results data globally
+        let resultsData = null;
+
+        // Print Modal Functions
+        function openEmailModal() {
+            document.getElementById('email-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEmailModal() {
+            document.getElementById('email-modal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('email-form').reset();
+        }
+
+        async function handleEmailSubmit(event) {
+            event.preventDefault();
+            console.log('handleEmailSubmit aufgerufen');
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const userName = document.getElementById('user-name').value.trim();
+            const userEmail = document.getElementById('user-email').value.trim();
+            const dataPrivacy = document.getElementById('privacy-accept').checked;
+            const newsletterOptIn = document.getElementById('newsletter-opt-in').checked;
+            
+            console.log('Name:', userName, 'Email:', userEmail, 'Datenschutz:', dataPrivacy);
+            
+            // Validierung: Name, Email und Datenschutz erforderlich
+            if (!userName || !userEmail || !dataPrivacy) {
+                alert('Bitte füllen Sie alle Pflichtfelder aus und akzeptieren Sie die Datenschutzerklärung.');
+                return;
+            }
+            
+            // Button deaktivieren während Versand
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Wird gesendet...';
+            
+            try {
+                // URL mit allen Parametern generieren
+                const baseUrl = window.location.origin + window.location.pathname;
+                const params = new URLSearchParams();
+                
+                // Alle Antworten als Parameter hinzufügen
+                Object.keys(answers).forEach(key => {
+                    params.append(`dim${key}`, answers[key]);
+                });
+                
+                const reportUrl = `${baseUrl}?${params.toString()}#results`;
+                
+                // Energie-Index berechnen
+                const dysbalanceData = calculateDysbalanceIndex();
+                
+                // E-Mail an Coach senden
+                const emailParams = {
+                    to_email: 'nico.gersdorff.coaching@gmail.com',
+                    user_name: userName,
+                    user_email: userEmail,
+                    newsletter: newsletterOptIn ? 'Ja' : 'Nein',
+                    energie_index: dysbalanceData.percentage + '%',
+                    interpretation: dysbalanceData.interpretation,
+                    report_link: reportUrl,
+                    date: new Date().toLocaleDateString('de-DE')
+                };
+                
+                console.log('Sende E-Mail an Coach mit Parametern:', emailParams);
+                
+                await emailjs.send(
+                    'service_xoea2cq',    // Service ID
+                    'template_coach_notification',  // Template ID für Coach
+                    emailParams
+                );
+                
+                console.log('E-Mail erfolgreich gesendet');
+                
+                // Modal schließen
+                closeEmailModal();
+                
+                // Erfolgsmeldung anzeigen
+                showSuccessMessage();
+                
+            } catch (error) {
+                console.error('EmailJS Fehler:', error);
+                alert('Es gab ein Problem beim Versenden. Bitte versuchen Sie es erneut oder kontaktieren Sie nico.gersdorff.coaching@gmail.com direkt.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'JETZT ANFORDERN';
+            }
+        }
+
+        function showSuccessMessage() {
+            // Erfolgsmeldung oberhalb des Berichts einfügen
+            const resultsContainer = document.querySelector('.results-container');
+            const successHTML = `
+                <div id="success-message" style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+                     border: 2px solid #28a745; border-radius: 12px; padding: 20px; 
+                     margin-bottom: 28px; text-align: center;">
+                    <h3 style="color: #155724; margin: 0 0 8px 0; font-size: 1.3rem;">
+                        ✅ Vielen Dank!
+                    </h3>
+                    <p style="color: #155724; margin: 0; font-size: 1rem;">
+                        Ihr vollständiger PDF-Bericht kommt in Kürze per E-Mail.
+                    </p>
+                    <p style="color: #155724; margin: 8px 0 0 0; font-weight: 600; font-size: 0.95rem;">
+                        Nico von Gersdorff
+                    </p>
+                </div>
+            `;
+            resultsContainer.insertAdjacentHTML('afterbegin', successHTML);
+            
+            // Scroll to success message
+            document.getElementById('success-message').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEmailModal();
+                }
+            });
+        });
+
+        const dimensions = [
+            {
+                category: "Arbeitslast",
+                question: "Wie ist Ihre Auslastung?",
+                boxes: [
+                    "Belastender Leerlauf",
+                    "Unterfordert, unnötige Pausen",
+                    "Genau richtig ausgelastet",
+                    "Dauerhaft hoher Workload",
+                    "Land unter / Unbewältigbar"
+                ],
+                coachingQuestions: [
+                    "Was würde es für Sie bedeuten, wenn Sie die richtige Balance zwischen Auslastung und Erholung finden würden?",
+                    "Welche Schritte könnten Sie gehen, um Ihre Arbeitslast aktiv zu steuern?",
+                    "Was hält Sie davon ab, diese Situation zu verändern?"
+                ]
+            },
+            {
+                category: "Führung & Support",
+                question: "Wie werden Sie geführt?",
+                boxes: [
+                    "Völlig orientierungslos",
+                    "Kaum Feedback oder Rückhalt",
+                    "Klare Ziele & Vertrauen",
+                    "Zu enge Kontrolle",
+                    "Totales Micromanagement"
+                ],
+                coachingQuestions: [
+                    "Wie würde sich Ihr Alltag verändern, wenn Sie die Führungssituation adressieren würden?",
+                    "Welchen Preis zahlen Sie für die aktuelle Führungsdynamik?",
+                    "Was bräuchten Sie, um das Gespräch über Ihren Führungsbedarf zu führen?"
+                ]
+            },
+            {
+                category: "Arbeitsfluss",
+                question: "Wie flüssig läuft Ihre Arbeit?",
+                boxes: [
+                    "Völliges Chaos: Jeder macht was er will",
+                    "Fehlende Prozesse: Ständige Reibungsverluste",
+                    "Reibungsloser Flow",
+                    "Zähe Bürokratie",
+                    "System-Blockade: Starre Vorschriften"
+                ],
+                coachingQuestions: [
+                    "Was würde Ihnen helfen, ein gesundes Tempo zu etablieren?",
+                    "Welche Prozesse könnten verbessert werden?",
+                    "Was ist der Preis der aktuellen Reibungsverluste?"
+                ]
+            },
+            {
+                category: "Prioritäten & Klarheit",
+                question: "Wie klar sind Ihre Ziele?",
+                boxes: [
+                    "Ziel-Lethargie",
+                    "Diffuse Anforderungen",
+                    "Klare Fokus-Themen",
+                    "Häufige Prioritätenwechsel",
+                    "Extreme Moving Targets / Hetzjagd"
+                ],
+                coachingQuestions: [
+                    "Was würde Ihnen helfen, klare Prioritäten zu setzen?",
+                    "Welche Auswirkungen haben die ständigen Wechsel auf Ihre Arbeit?",
+                    "Wie könnten Sie mehr Klarheit einfordern?"
+                ]
+            },
+            {
+                category: "Fokus-Qualität",
+                question: "Wie ungestört arbeiten Sie?",
+                boxes: [
+                    "Einschläfernde Routine",
+                    "Zu monotone Aufgaben",
+                    "Ungestörtes Arbeiten möglich",
+                    "Häufige Unterbrechungen",
+                    "Massive Zerstückelung der Konzentration"
+                ],
+                coachingQuestions: [
+                    "Was würde es Ihnen ermöglichen, klare Fokus-Zeiten zu schaffen?",
+                    "Welche Auswirkungen haben die Unterbrechungen auf Ihre Arbeitsqualität?",
+                    "Wie könnten Sie Ihre Erreichbarkeit neu verhandeln?"
+                ]
+            },
+            {
+                category: "Gestaltungsspielraum",
+                question: "Wie viel können Sie mitbestimmen?",
+                boxes: [
+                    "Ohnmacht / Kein Einfluss",
+                    "Zu wenig Spielraum",
+                    "Kann aktiv mitgestalten",
+                    "Trage zu hohe Verantwortung",
+                    "Alleinlast ohne Rückendeckung"
+                ],
+                coachingQuestions: [
+                    "Was hindert Sie aktuell daran, Verantwortung abzugeben?",
+                    "Welche Entscheidungen würden Sie gerne teilen?",
+                    "Was wäre der erste Schritt, um mehr Gestaltungsspielraum einzufordern?"
+                ]
+            },
+            {
+                category: "Sinn & Potenzial",
+                question: "Erzeugt Ihre Arbeit einen Wert?",
+                boxes: [
+                    "Quälende Sinnleere",
+                    "Nutze eigenes Potenzial kaum",
+                    "Sinnhafte & wertvolle Arbeit",
+                    "Job dominiert mein Denken",
+                    "Opfere mich völlig auf"
+                ],
+                coachingQuestions: [
+                    "Was würde Ihrer Arbeit wieder Bedeutung geben?",
+                    "Welchen Preis zahlen Sie dafür, dass der Job Ihr Denken dominiert?",
+                    "Was würde sich ändern, wenn Sie Ihre Werte klarer definieren würden?"
+                ]
+            },
+            {
+                category: "Komplexität",
+                question: "Wie fordernd sind die Aufgaben?",
+                boxes: [
+                    "Geistig unterfordert",
+                    "Zu simple Routine",
+                    "Genau mein Niveau",
+                    "Komplexität der Aufgaben und/oder Technik sehr hoch",
+                    "Komplexität der Aufgaben und/oder Technik überfordert mich"
+                ],
+                coachingQuestions: [
+                    "Welche Aufgaben würden Sie wirklich herausfordern, ohne zu überfordern?",
+                    "Was bräuchten Sie, um die Routine zu durchbrechen?",
+                    "Wie könnten Sie Unterstützung bei der technischen Überforderung einfordern?"
+                ]
+            },
+            {
+                category: "Soziale Einbindung",
+                question: "Wie erleben Sie das Miteinander?",
+                boxes: [
+                    "Gefühl der Isolation",
+                    "Zu distanziertes Miteinander",
+                    "Vertrauensvolles Miteinander",
+                    "Häufige Reibereien",
+                    "Destruktive Politik & Intrigen"
+                ],
+                coachingQuestions: [
+                    "Was würde ein vertrauensvolles Miteinander für Sie bedeuten?",
+                    "Welchen ersten Schritt könnten Sie für mehr Verbindung gehen?",
+                    "Wie gehen Sie mit den Teamdynamiken um – und was kostet Sie das?"
+                ]
+            },
+            {
+                category: "Arbeitstaggestaltung",
+                question: "Wie gestaltet sich Ihr Arbeitstag?",
+                boxes: [
+                    "Strukturlose Leere",
+                    "Lockere Taktung / Leerlauf",
+                    "Gesunde Balance (Fokus/Meetings/Pause)",
+                    "Hohe Dichte / Kaum Pausen",
+                    "Meeting-Marathon / Fremdbestimmung"
+                ],
+                coachingQuestions: [
+                    "Was würde Ihnen helfen, Ihren Tag aktiv zu gestalten?",
+                    "Welche Rituale oder Strukturen könnten Sie etablieren?",
+                    "Wie könnten Sie mehr Kontrolle über Ihre Zeit gewinnen?"
+                ]
+            },
+            {
+                category: "Regeneration (Freizeit)",
+                question: "Wie gut können Sie abschalten?",
+                boxes: [
+                    "Innere Leere",
+                    "Lustlose Trägheit",
+                    "Gesunde Erholung",
+                    "Mangelndes Abschalten: Kann abends kaum loslassen",
+                    "Job-Dauer-Standby: Keine echte Trennung zum Privatleben mehr"
+                ],
+                coachingQuestions: [
+                    "Was raubt Ihnen die Erholung – und wie könnten Sie das verändern?",
+                    "Welche Abendroutine würde Ihnen helfen, besser loszulassen?",
+                    "Was würde echte Regeneration für Ihren Alltag bedeuten?"
+                ]
+            },
+            {
+                category: "Körperliche Resonanz",
+                question: "Wie geht es Ihnen körperlich?",
+                boxes: [
+                    "Fehlendes Gespür",
+                    "Dauerhaft schlapp",
+                    "Volle Vitalität",
+                    "Akute Stress-Symptome (z.B. Verspannung)",
+                    "Massive Warnsignale (körperlich)"
+                ],
+                coachingQuestions: [
+                    "Was versucht Ihr Körper Ihnen zu sagen?",
+                    "Welche körperlichen Warnsignale ignorieren Sie – und warum?",
+                    "Was würde sich ändern, wenn Sie mehr auf Ihren Körper hören würden?"
+                ]
+            },
+            {
+                category: "Lebenskontext & Care-Arbeit",
+                question: "Wie ist Ihre Situation außerhalb des Jobs?",
+                boxes: [
+                    "Isolierte Leere",
+                    "Kaum private Aufgaben",
+                    "Erfüllende Balance",
+                    "Hohe Doppelbelastung (Erziehung/Pflege)",
+                    "Extreme Überlastung: Immense private Verantwortung ohne Zeit für sich"
+                ],
+                coachingQuestions: [
+                    "Wie wirkt sich Ihre private Situation auf Ihre Arbeitsfähigkeit aus?",
+                    "Welche Unterstützung bräuchten Sie, um die Doppelbelastung zu reduzieren?",
+                    "Was würde eine erfüllende Balance für Sie bedeuten?"
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function renderQuestion(index) {
+            const dimension = dimensions[index];
+            const container = document.getElementById('questionContainer');
+            
+            const html = `
+                <div class="question-card">
+                    <div class="question-header">
+                        <div class="question-number">Dimension ${index + 1} von ${dimensions.length}</div>
+                        <h2 class="question-title">${dimension.category}</h2>
+                        <p class="question-subtitle">${dimension.question}</p>
+                    </div>
+                    
+                    <div class="options-container">
+                        ${dimension.boxes.map((boxText, boxIndex) => {
+                            const value = boxIndex + 1;
+                            return `
+                                <div class="option-box ${value === 3 ? 'target' : ''} ${answers[index] === value ? 'selected' : ''}" 
+                                     data-value="${value}"
+                                     onclick="selectOption(${index}, ${value})">
+                                    <div class="option-text">${boxText}</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div class="pole-labels">
+                        <div class="pole-label left">← Mangel</div>
+                        <div class="pole-label center">Balance-Zone</div>
+                        <div class="pole-label right">Übermaß →</div>
+                    </div>
+                    
+                    <div class="nav-buttons">
+                        ${index > 0 ? '<button class="btn-secondary" onclick="previousQuestion()">Zurück</button>' : '<div></div>'}
+                        ${index < dimensions.length - 1 
+                            ? '<div></div>' // Kein Weiter-Button mehr
+                            : `<button class="btn-primary" id="nextBtn" ${answers[index] ? '' : 'disabled'} onclick="showResults()">Auswertung anzeigen</button>`
+                        }
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            updateProgress();
+        }
+
+        function selectOption(questionIndex, value) {
+            answers[questionIndex] = value;
+            renderQuestion(currentQuestion);
+            
+            // Automatisch zur nächsten Frage nach kurzer Verzögerung
+            setTimeout(() => {
+                if (currentQuestion < dimensions.length - 1) {
+                    nextQuestion();
+                } else {
+                    // Letzte Frage - zeige "Auswertung anzeigen" Button
+                    document.getElementById('nextBtn').disabled = false;
+                }
+            }, 400);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < dimensions.length - 1) {
+                currentQuestion++;
+                renderQuestion(currentQuestion);
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion(currentQuestion);
+            }
+        }
+
+        function calculateDysbalanceIndex() {
+            let totalDeviation = 0;
+            
+            Object.values(answers).forEach(value => {
+                if (value === 3) {
+                    totalDeviation += 0; // Perfekte Balance
+                } else if (value === 2 || value === 4) {
+                    totalDeviation += 2; // Leichte Abweichung (exponentiell)
+                } else if (value === 1 || value === 5) {
+                    totalDeviation += 5; // Extreme Abweichung (exponentiell)
+                }
+            });
+            
+            const maxDeviation = dimensions.length * 5; // 13 * 5 = 65
+            const percentage = Math.round((totalDeviation / maxDeviation) * 100);
+            
+            let interpretation, statusClass;
+            if (percentage <= 15) {
+                interpretation = "Souveränität";
+                statusClass = "balanced";
+            } else if (percentage <= 35) {
+                interpretation = "Sensibilisierung";
+                statusClass = "warning";
+            } else if (percentage <= 60) {
+                interpretation = "Substanz-Verzehr";
+                statusClass = "elevated";
+            } else {
+                interpretation = "Akute Gefährdung";
+                statusClass = "critical";
+            }
+            
+            return { percentage, interpretation, statusClass, totalDeviation };
+        }
+
+        function getColorForPercentage(percentage) {
+            // Kontinuierlicher Farbverlauf: Grün → Gelb → Orange → Rot
+            if (percentage <= 15) {
+                // 0-15%: Grün
+                const ratio = percentage / 15;
+                const r = Math.round(45 + (100 - 45) * ratio);
+                const g = Math.round(95 + (180 - 95) * ratio);
+                const b = Math.round(79 + (60 - 79) * ratio);
+                return `rgb(${r}, ${g}, ${b})`;
+            } else if (percentage <= 35) {
+                // 16-35%: Grün zu Gelb
+                const ratio = (percentage - 15) / 20;
+                const r = Math.round(100 + (244 - 100) * ratio);
+                const g = Math.round(180 + (164 - 180) * ratio);
+                const b = Math.round(60 + (63 - 60) * ratio);
+                return `rgb(${r}, ${g}, ${b})`;
+            } else if (percentage <= 60) {
+                // 36-60%: Gelb zu Orange
+                const ratio = (percentage - 35) / 25;
+                const r = Math.round(244 + (230 - 244) * ratio);
+                const g = Math.round(164 + (100 - 164) * ratio);
+                const b = Math.round(63 + (70 - 63) * ratio);
+                return `rgb(${r}, ${g}, ${b})`;
+            } else {
+                // 61-100%: Orange zu Rot
+                const ratio = Math.min((percentage - 60) / 40, 1);
+                const r = Math.round(230 + (200 - 230) * ratio);
+                const g = Math.round(100 + (20 - 100) * ratio);
+                const b = Math.round(70 + (40 - 70) * ratio);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+        }
+
+        function updateProgress() {
+            const progress = (Object.keys(answers).length / dimensions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResults() {
+            document.getElementById('questionnaire').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            renderDysbalanceScore();
+            renderRadarChart();
+            renderRiskAnalysis();
+            renderDimensionsDetails();
+        }
+
+        function renderDysbalanceScore() {
+            const container = document.getElementById('dysbalanceScore');
+            const { percentage, interpretation, statusClass } = calculateDysbalanceIndex();
+            
+            const scoreColor = getColorForPercentage(percentage);
+            
+            let interpretationDetails = '';
+            if (percentage <= 15) {
+                interpretationDetails = 'Souveränität: Ihr System arbeitet souverän. Sie haben ausreichend Ressourcen und Regenerationsphasen.';
+            } else if (percentage <= 35) {
+                interpretationDetails = 'Sensibilisierung: Erste Warnzeichen. Sie sollten die markierten Dimensionen beobachten und gezielt gegensteuern.';
+            } else if (percentage <= 60) {
+                interpretationDetails = 'Substanz-Verzehr: Sie verbrauchen mehr als Sie regenerieren. Einzelne Faktoren gefährden Ihre langfristige Gesundheit.';
+            } else {
+                interpretationDetails = 'Akute Gefährdung: Es besteht ein massives Risiko für chronische Erschöpfung. Sofortige Entlastung ist zwingend erforderlich.';
+            }
+            
+            const html = `
+                <h3 class="score-title">Energie-Index</h3>
+                <div class="score-display">
+                    <div class="score-circle" style="border-color: ${scoreColor};">
+                        <div class="score-percentage" style="color: ${scoreColor};">${percentage}%</div>
+                        <div class="score-label">Abweichung von Ihrer Balance</div>
+                    </div>
+                    <div class="score-interpretation ${statusClass}">
+                        <div class="interpretation-title" style="color: ${scoreColor};">${interpretation}</div>
+                        <div class="interpretation-text">${interpretationDetails}</div>
+                    </div>
+                </div>
+                <div class="score-bar-container">
+                    <div class="score-bar">
+                        <div class="score-marker" style="left: ${percentage}%;"></div>
+                    </div>
+                    <div class="score-bar-labels">
+                        <span>0%</span>
+                        <span>15%</span>
+                        <span>35%</span>
+                        <span>60%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        function renderRadarChart() {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            // Funktion für Punkt-Farben: Ampel-Logik
+            const getPointColor = (value) => {
+                if (value === 3) return '#40916C'; // Grün für Balance
+                if (value === 2 || value === 4) return '#f4a261'; // Gelb/Orange für leichte Abweichung
+                return '#e63946'; // Rot für kritische Abweichung
+            };
+            
+            const pointColors = dimensions.map((_, i) => getPointColor(answers[i]));
+            
+            const data = {
+                labels: dimensions.map(d => d.category),
+                datasets: [
+                    {
+                        label: 'Ihre Werte',
+                        data: dimensions.map((_, i) => answers[i]),
+                        backgroundColor: 'rgba(156, 163, 175, 0.05)',
+                        borderColor: 'rgba(156, 163, 175, 0.4)',
+                        borderWidth: 2,
+                        borderDash: [5, 3],
+                        pointBackgroundColor: pointColors,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 7,
+                        pointHoverRadius: 9,
+                        pointHoverBackgroundColor: pointColors,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    },
+                    {
+                        label: 'Balance-Ring (Zielwert 3)',
+                        data: dimensions.map(() => 3),
+                        backgroundColor: 'rgba(64, 145, 108, 0)',
+                        borderColor: 'rgba(64, 145, 108, 0.8)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        pointHoverRadius: 0
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'radar',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                font: {
+                                    size: 11,
+                                    family: "'Open Sans', sans-serif"
+                                }
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 12,
+                                    family: "'Open Sans', sans-serif",
+                                    weight: '600'
+                                },
+                                color: '#2a2a2a'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 13,
+                                    family: "'Open Sans', sans-serif"
+                                },
+                                padding: 20
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderRiskAnalysis() {
+            const container = document.getElementById('riskAnalysis');
+            
+            const lowCount = Object.values(answers).filter(v => v <= 2).length;
+            const highCount = Object.values(answers).filter(v => v >= 4).length;
+            const balancedCount = Object.values(answers).filter(v => v === 3).length;
+            
+            // Identifiziere kritische Dimensionen (Wert 1 oder 5)
+            const kritischeDimensionen = [];
+            dimensions.forEach((dim, index) => {
+                if (answers[index] === 1 || answers[index] === 5) {
+                    kritischeDimensionen.push(dim.category);
+                }
+            });
+            
+            // Identifiziere Warnsignal-Dimensionen (Wert 2 oder 4)
+            const warnsignalDimensionen = [];
+            dimensions.forEach((dim, index) => {
+                if (answers[index] === 2 || answers[index] === 4) {
+                    warnsignalDimensionen.push(dim.category);
+                }
+            });
+            
+            // Energie-Index berechnen
+            const dysbalanceData = calculateDysbalanceIndex();
+            const percentage = dysbalanceData.percentage;
+            
+            let riskHTML = '<h2 class="risk-title">Risiko-Check</h2>';
+            
+            // DYNAMISCHE ANALYSE basierend auf Energie-Index
+            let analysisText = '';
+            let statusClass = '';
+            let statusTitle = '';
+            
+            if (percentage <= 15) {
+                statusClass = 'balanced';
+                statusTitle = '✓ Souveräne Balance';
+                analysisText = 'Ihr System arbeitet souverän. Dennoch zeigen einzelne Werte punktuelle Energieverluste, die Ihre langfristige Vitalität bremsen können.';
+            } else if (percentage <= 35) {
+                statusClass = 'warning';
+                statusTitle = '⚠️ Erhöhte Spannung';
+                analysisText = 'Warnsignale erkennbar. Ihr System steht unter erhöhter Spannung. Bestimmte Dimensionen verbrauchen mehr Energie, als sie regenerieren.';
+            } else {
+                statusClass = 'critical';
+                statusTitle = '🔴 Kritische Energiebilanz';
+                analysisText = 'Akuter Handlungsbedarf. Ihre Energiebilanz ist deutlich negativ. Ein Burnout-Risiko oder chronische Erschöpfung sind ohne Gegenmaßnahmen wahrscheinlich.';
+            }
+            
+            // Hauptanalyse-Box
+            riskHTML += `
+                <div class="risk-indicator ${statusClass}" style="margin-bottom: 20px;">
+                    <h3>${statusTitle}</h3>
+                    <p style="margin-bottom: 12px;">${analysisText}</p>
+            `;
+            
+            // KONKRETE BENENNUNG: Kritische Dimensionen (1 oder 5)
+            if (kritischeDimensionen.length > 0) {
+                let dimensionenText = '';
+                if (kritischeDimensionen.length <= 3) {
+                    dimensionenText = kritischeDimensionen.map(d => `<strong>${d}</strong>`).join(', ');
+                } else {
+                    const first3 = kritischeDimensionen.slice(0, 3).map(d => `<strong>${d}</strong>`).join(', ');
+                    dimensionenText = `in mehreren Bereichen wie ${first3}`;
+                }
+                
+                riskHTML += `
+                    <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #dc2626; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                        <p style="margin: 0; color: #991b1b; font-weight: 500; font-size: 0.95rem; line-height: 1.5;">
+                            🔴 <strong>Besonders kritisch</strong> zeigt sich Ihr System aktuell im Bereich ${dimensionenText}. Hier findet ein massiver Energieabfluss statt, der sofortige Aufmerksamkeit erfordert.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            // KONKRETE BENENNUNG: Warnsignal-Dimensionen (2 oder 4)
+            if (warnsignalDimensionen.length > 0 && kritischeDimensionen.length < 3) {
+                let dimensionenText = '';
+                if (warnsignalDimensionen.length <= 3) {
+                    dimensionenText = warnsignalDimensionen.map(d => `<strong>${d}</strong>`).join(', ');
+                } else {
+                    const first3 = warnsignalDimensionen.slice(0, 3).map(d => `<strong>${d}</strong>`).join(', ');
+                    dimensionenText = `${first3} und weitere`;
+                }
+                
+                riskHTML += `
+                    <div style="background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                        <p style="margin: 0; color: #92400e; font-weight: 500; font-size: 0.95rem; line-height: 1.5;">
+                            ⚠️ Achten Sie besonders auf ${dimensionenText}. Diese Bereiche zeigen erste Anzeichen von Instabilität.
+                        </p>
+                    </div>
+                `;
+            }
+            
+            // Call-to-Action (immer)
+            riskHTML += `
+                    <p style="margin: 16px 0 0 0; padding-top: 12px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 0.95rem;">
+                        💡 Die exakten Strategien zur Entlastung dieser kritischen Punkte finden Sie in Ihrem persönlichen PDF-Bericht.
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = riskHTML;
+        }
+
+        function renderDimensionsDetails() {
+            const container = document.getElementById('dimensionsDetails');
+            
+            // Gruppiere Dimensionen nach Priorität
+            const staerkeAnker = [];
+            const leichteAbweichungen = [];
+            const kritischeFelder = [];
+            
+            dimensions.forEach((dim, index) => {
+                const value = answers[index];
+                const data = { dim, index, value, boxText: dim.boxes[value - 1] };
+                
+                if (value === 3) {
+                    staerkeAnker.push(data);
+                } else if (value === 2 || value === 4) {
+                    leichteAbweichungen.push(data);
+                } else {
+                    kritischeFelder.push(data);
+                }
+            });
+            
+            let html = '<h2 style="font-family: \'Montserrat\', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 48px; color: var(--text-dark);">Ihre Ergebnisse nach Priorität</h2>';
+            
+            // PSYCHOLOGISCHE SORTIERUNG: 1. GRÜN (Kraftquellen)
+            if (staerkeAnker.length > 0) {
+                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #40916C; margin-bottom: 16px; border-left: 4px solid #40916C; padding-left: 16px;">✓ Ihre Kraftquellen</h3>';
+                html += '<div class="dimensions-grid">';
+                staerkeAnker.forEach(({ dim, boxText }) => {
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #40916C;">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #40916C, #2D6A4F);">Stabilitäts-Anker</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            // 2. ROT (Handlungsfelder) - KOMMT VOR GELB!
+            if (kritischeFelder.length > 0) {
+                html += '<div class="handlungsfelder-section" style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #e63946; margin-bottom: 16px; border-left: 4px solid #e63946; padding-left: 16px;">🔴 Ihre Handlungsfelder</h3>';
+                html += '<div class="dimensions-grid">';
+                kritischeFelder.forEach(({ dim, value, boxText, index }) => {
+                    const isMangel = value <= 2;
+                    const polaritaet = isMangel ? 'Mangel/Unterforderung' : 'Übermaß/Überforderung';
+                    const direction = isMangel ? 'starker Mangel (Bore-out-Gefahr)' : 'starkes Übermaß (Burn-out-Gefahr)';
+                    
+                    // Spezielle Tipps für bestimmte Dimensionen
+                    let spezialTipp = '';
+                    if (dim.category.includes('Arbeitslast') || dim.category.includes('Arbeitsfluss') || dim.category.includes('Prioritäten')) {
+                        spezialTipp = '<li><strong>Systemischer Tipp:</strong> Suchen Sie zeitnah das Gespräch mit Ihrer Führungskraft. Klären Sie Prioritäten (\'Moving Targets\') und fordern Sie Unterstützung bei der Strukturierung ein.</li>';
+                    }
+                    
+                    // Erste Coaching-Frage
+                    const hauptFrage = dim.coachingQuestions[0];
+                    const weitereFragen = dim.coachingQuestions.slice(1);
+                    
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #e63946; background: linear-gradient(135deg, rgba(230, 57, 70, 0.05), white);">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #e63946, #c85a54);">Handlungsfeld</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                            <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                                <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
+                            </div>
+                            <div class="coaching-questions" style="display: none;">
+                                <h4>Reflexions-Impuls</h4>
+                                <p style="font-weight: 600; color: #e63946; margin-bottom: 12px;">→ ${hauptFrage}</p>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px;">Mehr strategische Impulse anzeigen</summary>
+                                    <ul style="margin-top: 12px;">
+                                        ${weitereFragen.map(q => `<li>${q}</li>`).join('')}
+                                        ${spezialTipp}
+                                        <li><strong style="color: #e63946;">Sofort-Hilfe: Radikaler Minimalismus</strong> – Welche 3 Aufgaben/Verpflichtungen könnten Sie HEUTE streichen oder delegieren?</li>
+                                        <li><strong style="color: #e63946;">Klärungsgespräch mit der Leitung:</strong> Welche Rahmenbedingungen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</li>
+                                        <li><strong style="color: #e63946;">Wer könnte Sie bei der Stabilisierung unterstützen?</strong> (Team, Coach, HR, Familie)</li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            // 3. GELB (Optimierungs-Potenziale) - KOMMT NACH ROT!
+            if (leichteAbweichungen.length > 0) {
+                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #f4a261; margin-bottom: 16px; border-left: 4px solid #f4a261; padding-left: 16px;">⚠️ Optimierungsfelder</h3>';
+                html += '<div class="dimensions-grid">';
+                leichteAbweichungen.forEach(({ dim, value, boxText }) => {
+                    const isMangel = value === 2;
+                    const direction = isMangel ? 'Mangel' : 'Übermaß';
+                    const polaritaet = isMangel ? 'Mangel/Unterforderung' : 'Übermaß/Überforderung';
+                    
+                    // Erste Coaching-Frage
+                    const hauptFrage = dim.coachingQuestions[0];
+                    const weitereFragen = dim.coachingQuestions.slice(1);
+                    
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #f4a261;">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #f4a261, #e8a43f);">Optimierungsfeld</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                            <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                                <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
+                            </div>
+                            <div class="coaching-questions" style="display: none;">
+                                <h4>Reflexions-Impuls</h4>
+                                <p style="font-weight: 600; color: #f4a261; margin-bottom: 12px;">→ ${hauptFrage}</p>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px;">Mehr strategische Impulse anzeigen</summary>
+                                    <ul style="margin-top: 12px;">
+                                        ${weitereFragen.map(q => `<li>${q}</li>`).join('')}
+                                        <li><em>Welche äußeren Strukturen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</em></li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pageWidth = 210;
+            const margin = 20;
+            const contentWidth = pageWidth - (2 * margin);
+            let y = margin;
+            
+            // Header
+            pdf.setFillColor(64, 145, 108);
+            pdf.rect(0, 0, pageWidth, 50, 'F');
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(24);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Energie-Profiler - Ihre Auswertung', margin, 25);
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'normal');
+            pdf.text('Analyse Ihrer Arbeits-Balance in 13 Dimensionen', margin, 35);
+            
+            y = 70;
+            
+            // Energie-Index
+            const dysbalanceData = calculateDysbalanceIndex();
+            
+            pdf.setFillColor(250, 248, 245);
+            pdf.rect(margin, y, contentWidth, 35, 'F');
+            
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Energie-Index', margin + 10, y + 12);
+            
+            // Score Color basierend auf Percentage (0-15-35-60)
+            let scoreColor;
+            if (dysbalanceData.percentage <= 15) scoreColor = [45, 95, 79]; // Grün
+            else if (dysbalanceData.percentage <= 35) scoreColor = [244, 164, 63]; // Gelb
+            else if (dysbalanceData.percentage <= 60) scoreColor = [244, 162, 97]; // Orange
+            else scoreColor = [230, 57, 70]; // Rot
+            
+            pdf.setDrawColor(...scoreColor);
+            pdf.setLineWidth(2);
+            pdf.circle(contentWidth + margin - 25, y + 17, 12);
+            
+            pdf.setTextColor(...scoreColor);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`${dysbalanceData.percentage}%`, contentWidth + margin - 25, y + 19, { align: 'center' });
+            
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(12);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(dysbalanceData.interpretation, margin + 10, y + 24);
+            
+            // Farbbalken
+            const barWidth = contentWidth - 20;
+            const barHeight = 6;
+            const barY = y + 30;
+            
+            // Gradient simulation mit Rechtecken
+            const segments = 50;
+            const segmentWidth = barWidth / segments;
+            for (let i = 0; i < segments; i++) {
+                const segmentPercentage = (i / segments) * 100;
+                let r, g, b;
+                if (segmentPercentage <= 30) {
+                    const ratio = segmentPercentage / 30;
+                    r = Math.round(45 + (244 - 45) * ratio);
+                    g = Math.round(95 + (164 - 95) * ratio);
+                    b = Math.round(79 + (63 - 79) * ratio);
+                } else if (segmentPercentage <= 60) {
+                    const ratio = (segmentPercentage - 30) / 30;
+                    r = Math.round(244 + (230 - 244) * ratio);
+                    g = Math.round(164 + (90 - 164) * ratio);
+                    b = Math.round(63 + (70 - 63) * ratio);
+                } else {
+                    const ratio = Math.min((segmentPercentage - 60) / 40, 1);
+                    r = Math.round(230 + (200 - 230) * ratio);
+                    g = Math.round(90 + (20 - 90) * ratio);
+                    b = Math.round(70 + (40 - 70) * ratio);
+                }
+                pdf.setFillColor(r, g, b);
+                pdf.rect(margin + 10 + (i * segmentWidth), barY, segmentWidth, barHeight, 'F');
+            }
+            
+            // Marker für aktuellen Score
+            const markerX = margin + 10 + (dysbalanceData.percentage / 100) * barWidth;
+            pdf.setDrawColor(42, 42, 42);
+            pdf.setLineWidth(1.5);
+            pdf.line(markerX, barY - 2, markerX, barY + barHeight + 2);
+            
+            y += 45;
+            
+            // Risiko-Analyse
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Risiko-Check', margin, y);
+            y += 40;
+            
+            pdf.setFontSize(10);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(42, 42, 42);
+            
+            const lowCount = Object.values(answers).filter(v => v <= 2).length;
+            const highCount = Object.values(answers).filter(v => v >= 4).length;
+            
+            // High-Strain-Check
+            const arbeitspensumIndex = 0;
+            const gestaltungsspielraumIndex = 5;
+            const highStrain = answers[arbeitspensumIndex] > 3 && answers[gestaltungsspielraumIndex] < 3;
+            
+            if (highStrain) {
+                pdf.setFillColor(200, 90, 84);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const strainText = pdf.splitTextToSize(
+                    `⚠️ Kritische Kombination: Hoher Druck bei geringem Einfluss. Diese Konstellation aus hoher Arbeitsbelastung und geringen Gestaltungsmöglichkeiten gilt als besonders risikoreich für chronischen Stress.`,
+                    contentWidth - 20
+                );
+                pdf.text(strainText, margin + 10, y);
+                y += strainText.length * 6 + 15;
+            }
+            
+            // Zähle spezifisch Alarm-Signale (Werte 1/5)
+            const mangelAlarmCount = Object.values(answers).filter(v => v <= 1).length;
+            const uebermasAlarmCount = Object.values(answers).filter(v => v >= 5).length;
+            
+            if (lowCount >= 4) {
+                pdf.setFillColor(91, 143, 168);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const boreText = pdf.splitTextToSize(
+                    `⚠️ Warnsignal: Risiko für Bore-out (Mangel-Stress). Der Stress entsteht hier durch einen Mangel an Sinn, Reiz oder Wertschätzung. Sie haben in ${lowCount} von ${dimensions.length} Dimensionen Werte im unteren Bereich (davon ${mangelAlarmCount} im kritischen Alarm-Bereich).`,
+                    contentWidth - 20
+                );
+                pdf.text(boreText, margin + 10, y);
+                y += boreText.length * 6 + 15;
+            }
+            
+            if (highCount >= 4) {
+                pdf.setFillColor(200, 90, 84);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const burnText = pdf.splitTextToSize(
+                    `⚠️ Warnsignal: Risiko für Burn-out (Übermaß-Stress). Die Belastungsgrenze ist durch dauerhaftes Übermaß an Druck und Entgrenzung überschritten. Sie haben in ${highCount} von ${dimensions.length} Dimensionen Werte im oberen Bereich (davon ${uebermasAlarmCount} im kritischen Alarm-Bereich).`,
+                    contentWidth - 20
+                );
+                pdf.text(burnText, margin + 10, y);
+                y += burnText.length * 6 + 15;
+            }
+            
+            y += 20;
+            
+            // Risiko-Referenz-Box
+            pdf.setFillColor(245, 245, 250);
+            pdf.rect(margin, y, contentWidth, 85, 'F');
+            pdf.setDrawColor(100, 100, 120);
+            pdf.setLineWidth(0.5);
+            pdf.rect(margin, y, contentWidth, 85, 'S');
+            
+            pdf.setTextColor(60, 60, 80);
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('📊 Stress-Zonen & Risiko-Level', margin + 8, y + 8);
+            
+            pdf.setFontSize(8);
+            pdf.setFont(undefined, 'normal');
+            
+            const zoneText1 = pdf.splitTextToSize(
+                '• 0-15% (Souveränität): Ihr System arbeitet souverän. Sie haben ausreichend Ressourcen und Regenerationsphasen.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText1, margin + 8, y + 16);
+            
+            const zoneText2 = pdf.splitTextToSize(
+                '• 16-35% (Sensibilisierung): Erste Warnzeichen. Sie sollten die markierten Dimensionen beobachten und gezielt gegensteuern.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText2, margin + 8, y + 24);
+            
+            const zoneText3 = pdf.splitTextToSize(
+                '• 36-60% (Substanz-Verzehr): Sie verbrauchen mehr als Sie regenerieren. Einzelne Faktoren gefährden Ihre langfristige Gesundheit.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText3, margin + 8, y + 32);
+            
+            const zoneText4 = pdf.splitTextToSize(
+                '• >60% (Akute Gefährdung): Massives Risiko für chronische Erschöpfung. Sofortige Entlastung ist zwingend erforderlich.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText4, margin + 8, y + 40);
+            
+            const risikoText1 = pdf.splitTextToSize(
+                '➤ Hohes Burn-out-Risiko: ≥ 4 Alarm-Signale (Übermaß/Werte 4-5) ODER kritische Kombi (hohe Arbeitslast + geringer Spielraum).',
+                contentWidth - 20
+            );
+            pdf.text(risikoText1, margin + 8, y + 52);
+            
+            const risikoText2 = pdf.splitTextToSize(
+                '➤ Bore-out-Risiko: ≥ 4 Alarm-Signale (Mangel/Werte 1-2). Chronische Unterforderung führt zu Sinnverlust & Erschöpfung.',
+                contentWidth - 20
+            );
+            pdf.text(risikoText2, margin + 8, y + 64);
+            
+            y += 105;
+            
+            // Dimensionen
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Ihre Dimensionen im Detail', margin, y);
+            y += 20;
+            
+            dimensions.forEach((dim, index) => {
+                if (y > 250) {
+                    pdf.addPage();
+                    y = margin;
+                }
+                
+                const value = answers[index];
+                const boxText = dim.boxes[value - 1];
+                
+                pdf.setFillColor(250, 248, 245);
+                pdf.rect(margin, y - 8, contentWidth, 25, 'F');
+                
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.setTextColor(64, 145, 108);
+                pdf.text(dim.category, margin + 10, y);
+                
+                pdf.setFontSize(10);
+                pdf.setFillColor(232, 164, 63);
+                pdf.rect(contentWidth + margin - 35, y - 6, 30, 8, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.text(`Wert: ${value}`, contentWidth + margin - 32, y);
+                
+                y += 12;
+                
+                // Farbbalken für die Dimension
+                let barColor;
+                let devPoints;
+                if (value === 3) {
+                    devPoints = 0;
+                    barColor = [45, 95, 79]; // Grün
+                } else if (value === 2 || value === 4) {
+                    devPoints = 2;
+                    barColor = [244, 162, 97]; // Orange/Gelb
+                } else {
+                    devPoints = 5;
+                    barColor = [230, 57, 70]; // Rot
+                }
+                const barPercentage = (devPoints / 5) * 100;
+                const barWidth = (barPercentage / 100) * 50; // Max 50mm Balken
+                
+                pdf.setFillColor(...barColor);
+                pdf.rect(margin + 10, y, barWidth, 4, 'F');
+                pdf.setDrawColor(200, 200, 200);
+                pdf.setLineWidth(0.5);
+                pdf.rect(margin + 10, y, 50, 4, 'S');
+                
+                y += 8;
+                
+                // Box-Beschreibung
+                pdf.setTextColor(64, 145, 108);
+                pdf.setFont(undefined, 'bold');
+                pdf.setFontSize(10);
+                const boxTextLines = pdf.splitTextToSize(boxText, contentWidth - 20);
+                pdf.text(boxTextLines, margin + 10, y);
+                y += boxTextLines.length * 5 + 4;
+                
+                if (value !== 3) {
+                    pdf.setTextColor(102, 102, 102);
+                    pdf.setFontSize(9);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Reflexions-Impulse:', margin + 10, y);
+                    y += 6;
+                    
+                    pdf.setFont(undefined, 'normal');
+                    dim.coachingQuestions.forEach(q => {
+                        const questionText = pdf.splitTextToSize(`→ ${q}`, contentWidth - 25);
+                        pdf.text(questionText, margin + 15, y);
+                        y += questionText.length * 5;
+                    });
+                }
+                
+                y += 10;
+            });
+            
+            // Footer
+            const totalPages = pdf.internal.pages.length - 1;
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setTextColor(150, 150, 150);
+                pdf.text(`Seite ${i} von ${totalPages}`, pageWidth / 2, 290, { align: 'center' });
+            }
+            
+            pdf.save('Stress-Assessment-Auswertung.pdf');
+        }
+
+        // Generate PDF as Blob (for email)
+        async function generatePDFBlob() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pageWidth = 210;
+            const margin = 20;
+            const contentWidth = pageWidth - (2 * margin);
+            let y = margin;
+            
+            // Header
+            pdf.setFillColor(64, 145, 108);
+            pdf.rect(0, 0, pageWidth, 50, 'F');
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(24);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Energie-Profiler - Ihre Auswertung', margin, 25);
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'normal');
+            pdf.text('Analyse Ihrer Arbeits-Balance in 13 Dimensionen', margin, 35);
+            
+            y = 70;
+            
+            // Energie-Index
+            const dysbalanceData = calculateDysbalanceIndex();
+            
+            pdf.setFillColor(250, 248, 245);
+            pdf.rect(margin, y, contentWidth, 35, 'F');
+            
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Energie-Index', margin + 10, y + 12);
+            
+            // Score Color basierend auf Percentage (0-15-35-60)
+            let scoreColor;
+            if (dysbalanceData.percentage <= 15) scoreColor = [45, 95, 79]; // Grün
+            else if (dysbalanceData.percentage <= 35) scoreColor = [244, 164, 63]; // Gelb
+            else if (dysbalanceData.percentage <= 60) scoreColor = [244, 162, 97]; // Orange
+            else scoreColor = [230, 57, 70]; // Rot
+            
+            pdf.setDrawColor(...scoreColor);
+            pdf.setLineWidth(2);
+            pdf.circle(contentWidth + margin - 25, y + 17, 12);
+            
+            pdf.setTextColor(...scoreColor);
+            pdf.setFontSize(14);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`${dysbalanceData.percentage}%`, contentWidth + margin - 25, y + 19, { align: 'center' });
+            
+            pdf.setFontSize(8);
+            pdf.setFont(undefined, 'normal');
+            pdf.text('Abweichung', contentWidth + margin - 25, y + 26, { align: 'center' });
+            
+            y += 45;
+            
+            // Interpretation
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'bold');
+            pdf.setTextColor(42, 42, 42);
+            pdf.text(dysbalanceData.interpretation, margin + 10, y);
+            
+            y += 8;
+            
+            pdf.setFontSize(9);
+            pdf.setFont(undefined, 'normal');
+            const interpText = pdf.splitTextToSize(dysbalanceData.interpretationDetails, contentWidth - 20);
+            pdf.text(interpText, margin + 10, y);
+            y += interpText.length * 5 + 10;
+            
+            // Farbbalken mit 50 Segmenten
+            const barY = y;
+            const barHeight = 8;
+            const barWidth = contentWidth - 20;
+            const segmentWidth = barWidth / 50;
+            
+            for (let i = 0; i < 50; i++) {
+                const segmentPercentage = (i / 50) * 100;
+                const color = getColorForPercentageRGB(segmentPercentage);
+                pdf.setFillColor(...color);
+                pdf.rect(margin + 10 + (i * segmentWidth), barY, segmentWidth, barHeight, 'F');
+            }
+            
+            // Marker
+            const markerX = margin + 10 + (dysbalanceData.percentage / 100) * barWidth;
+            pdf.setDrawColor(42, 42, 42);
+            pdf.setLineWidth(1.5);
+            pdf.line(markerX, barY - 2, markerX, barY + barHeight + 2);
+            
+            y += 45;
+            
+            // Risiko-Analyse
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Risiko-Check', margin, y);
+            y += 40;
+            
+            pdf.setFontSize(10);
+            pdf.setFont(undefined, 'normal');
+            pdf.setTextColor(42, 42, 42);
+            
+            const lowCount = Object.values(answers).filter(v => v <= 2).length;
+            const highCount = Object.values(answers).filter(v => v >= 4).length;
+            
+            // High-Strain-Check
+            const arbeitspensumIndex = 0;
+            const gestaltungsspielraumIndex = 5;
+            const highStrain = answers[arbeitspensumIndex] > 3 && answers[gestaltungsspielraumIndex] < 3;
+            
+            if (highStrain) {
+                pdf.setFillColor(200, 90, 84);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const strainText = pdf.splitTextToSize(
+                    `⚠️ Kritische Kombination: Hoher Druck bei geringem Einfluss. Diese Konstellation aus hoher Arbeitsbelastung und geringen Gestaltungsmöglichkeiten gilt als besonders risikoreich für chronischen Stress.`,
+                    contentWidth - 20
+                );
+                pdf.text(strainText, margin + 10, y);
+                y += strainText.length * 6 + 15;
+            }
+            
+            // Zähle spezifisch Alarm-Signale (Werte 1/5)
+            const mangelAlarmCount = Object.values(answers).filter(v => v <= 1).length;
+            const uebermasAlarmCount = Object.values(answers).filter(v => v >= 5).length;
+            
+            if (lowCount >= 4) {
+                pdf.setFillColor(91, 143, 168);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const boreText = pdf.splitTextToSize(
+                    `⚠️ Warnsignal: Risiko für Bore-out (Mangel-Stress). Der Stress entsteht hier durch einen Mangel an Sinn, Reiz oder Wertschätzung. Sie haben in ${lowCount} von ${dimensions.length} Dimensionen Werte im unteren Bereich (davon ${mangelAlarmCount} im kritischen Alarm-Bereich).`,
+                    contentWidth - 20
+                );
+                pdf.text(boreText, margin + 10, y);
+                y += boreText.length * 6 + 15;
+            }
+            
+            if (highCount >= 4) {
+                pdf.setFillColor(200, 90, 84);
+                pdf.rect(margin - 3, y - 4, 3, 16, 'F');
+                const burnText = pdf.splitTextToSize(
+                    `⚠️ Warnsignal: Risiko für Burn-out (Übermaß-Stress). Die Belastungsgrenze ist durch dauerhaftes Übermaß an Druck und Entgrenzung überschritten. Sie haben in ${highCount} von ${dimensions.length} Dimensionen Werte im oberen Bereich (davon ${uebermasAlarmCount} im kritischen Alarm-Bereich).`,
+                    contentWidth - 20
+                );
+                pdf.text(burnText, margin + 10, y);
+                y += burnText.length * 6 + 15;
+            }
+            
+            y += 20;
+            
+            // Risiko-Referenz-Box
+            pdf.setFillColor(245, 245, 250);
+            pdf.rect(margin, y, contentWidth, 85, 'F');
+            pdf.setDrawColor(100, 100, 120);
+            pdf.setLineWidth(0.5);
+            pdf.rect(margin, y, contentWidth, 85, 'S');
+            
+            pdf.setTextColor(60, 60, 80);
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('📊 Stress-Zonen & Risiko-Level', margin + 8, y + 8);
+            
+            pdf.setFontSize(8);
+            pdf.setFont(undefined, 'normal');
+            
+            const zoneText1 = pdf.splitTextToSize(
+                '• 0-15% (Souveränität): Ihr System arbeitet souverän. Sie haben ausreichend Ressourcen und Regenerationsphasen.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText1, margin + 8, y + 16);
+            
+            const zoneText2 = pdf.splitTextToSize(
+                '• 16-35% (Sensibilisierung): Erste Warnzeichen. Sie sollten die markierten Dimensionen beobachten und gezielt gegensteuern.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText2, margin + 8, y + 24);
+            
+            const zoneText3 = pdf.splitTextToSize(
+                '• 36-60% (Substanz-Verzehr): Sie verbrauchen mehr als Sie regenerieren. Einzelne Faktoren gefährden Ihre langfristige Gesundheit.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText3, margin + 8, y + 32);
+            
+            const zoneText4 = pdf.splitTextToSize(
+                '• >60% (Akute Gefährdung): Massives Risiko für chronische Erschöpfung. Sofortige Entlastung ist zwingend erforderlich.',
+                contentWidth - 20
+            );
+            pdf.text(zoneText4, margin + 8, y + 40);
+            
+            const risikoText1 = pdf.splitTextToSize(
+                '➤ Hohes Burn-out-Risiko: ≥ 4 Alarm-Signale (Übermaß/Werte 4-5) ODER kritische Kombi (hohe Arbeitslast + geringer Spielraum).',
+                contentWidth - 20
+            );
+            pdf.text(risikoText1, margin + 8, y + 52);
+            
+            const risikoText2 = pdf.splitTextToSize(
+                '➤ Bore-out-Risiko: ≥ 4 Alarm-Signale (Mangel/Werte 1-2). Chronische Unterforderung führt zu Sinnverlust & Erschöpfung.',
+                contentWidth - 20
+            );
+            pdf.text(risikoText2, margin + 8, y + 64);
+            
+            y += 105;
+            
+            // Dimensionen (verkürzte Version für Blob)
+            pdf.setTextColor(64, 145, 108);
+            pdf.setFontSize(16);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Ihre Dimensionen im Detail', margin, y);
+            y += 20;
+            
+            dimensions.forEach((dim, index) => {
+                if (y > 250) {
+                    pdf.addPage();
+                    y = margin;
+                }
+                
+                const value = answers[index];
+                const boxText = dim.boxes[value - 1];
+                
+                pdf.setFillColor(250, 248, 245);
+                pdf.rect(margin, y - 8, contentWidth, 25, 'F');
+                
+                pdf.setFontSize(12);
+                pdf.setFont(undefined, 'bold');
+                pdf.setTextColor(64, 145, 108);
+                pdf.text(dim.category, margin + 10, y);
+                
+                // Label statt Wert
+                let valueLabel, labelColor;
+                if (value === 3) {
+                    valueLabel = 'Stabilitäts-Anker';
+                    labelColor = [45, 95, 79];
+                } else if (value === 2 || value === 4) {
+                    valueLabel = 'Achtungs-Signal';
+                    labelColor = [244, 162, 97];
+                } else {
+                    valueLabel = 'Alarm-Signal';
+                    labelColor = [230, 57, 70];
+                }
+                
+                pdf.setFontSize(10);
+                pdf.setFillColor(...labelColor);
+                pdf.rect(contentWidth + margin - 50, y - 6, 45, 8, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.text(valueLabel, contentWidth + margin - 48, y, { align: 'left' });
+                
+                y += 12;
+                
+                // Farbbalken
+                let barColor;
+                let devPoints;
+                if (value === 3) {
+                    devPoints = 0;
+                    barColor = [45, 95, 79];
+                } else if (value === 2 || value === 4) {
+                    devPoints = 2;
+                    barColor = [244, 162, 97];
+                } else {
+                    devPoints = 5;
+                    barColor = [230, 57, 70];
+                }
+                const barPercentage = (devPoints / 5) * 100;
+                const dimBarWidth = (barPercentage / 100) * 50;
+                
+                pdf.setFillColor(...barColor);
+                pdf.rect(margin + 10, y, dimBarWidth, 4, 'F');
+                pdf.setDrawColor(200, 200, 200);
+                pdf.setLineWidth(0.5);
+                pdf.rect(margin + 10, y, 50, 4, 'S');
+                
+                y += 8;
+                
+                // Box-Beschreibung
+                pdf.setTextColor(64, 145, 108);
+                pdf.setFont(undefined, 'bold');
+                pdf.setFontSize(10);
+                const boxTextLines = pdf.splitTextToSize(boxText, contentWidth - 20);
+                pdf.text(boxTextLines, margin + 10, y);
+                y += boxTextLines.length * 5 + 4;
+                
+                if (value !== 3) {
+                    pdf.setTextColor(102, 102, 102);
+                    pdf.setFontSize(9);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Reflexions-Impulse:', margin + 10, y);
+                    y += 6;
+                    
+                    pdf.setFont(undefined, 'normal');
+                    dim.coachingQuestions.slice(0, 2).forEach(q => {
+                        const questionText = pdf.splitTextToSize(`→ ${q}`, contentWidth - 25);
+                        pdf.text(questionText, margin + 15, y);
+                        y += questionText.length * 5;
+                    });
+                }
+                
+                y += 12;
+            });
+            
+            // Return as Blob
+            return pdf.output('blob');
+        }
+
+        // Helper function for RGB color
+        function getColorForPercentageRGB(percentage) {
+            if (percentage <= 15) {
+                const ratio = percentage / 15;
+                const r = Math.round(45 + (100 - 45) * ratio);
+                const g = Math.round(95 + (180 - 95) * ratio);
+                const b = Math.round(79 + (60 - 79) * ratio);
+                return [r, g, b];
+            } else if (percentage <= 35) {
+                const ratio = (percentage - 15) / 20;
+                const r = Math.round(100 + (244 - 100) * ratio);
+                const g = Math.round(180 + (164 - 180) * ratio);
+                const b = Math.round(60 + (63 - 60) * ratio);
+                return [r, g, b];
+            } else if (percentage <= 60) {
+                const ratio = (percentage - 35) / 25;
+                const r = Math.round(244 + (230 - 244) * ratio);
+                const g = Math.round(164 + (100 - 164) * ratio);
+                const b = Math.round(63 + (70 - 63) * ratio);
+                return [r, g, b];
+            } else {
+                const ratio = Math.min((percentage - 60) / 40, 1);
+                const r = Math.round(230 + (200 - 230) * ratio);
+                const g = Math.round(100 + (20 - 100) * ratio);
+                const b = Math.round(70 + (40 - 70) * ratio);
+                return [r, g, b];
+            }
+        }
+
+        // Initialize
+        // Check for URL parameters (Coach-Link)
+        function loadFromURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasParams = Array.from(urlParams.keys()).some(key => key.startsWith('dim'));
+            
+            if (hasParams) {
+                // Load answers from URL
+                for (let i = 0; i < dimensions.length; i++) {
+                    const value = urlParams.get(`dim${i}`);
+                    if (value) {
+                        answers[i] = parseInt(value);
+                    }
+                }
+                
+                // Hide questionnaire, show results
+                document.getElementById('questionnaire').style.display = 'none';
+                document.querySelector('header').style.display = 'none';
+                showResults();
+                
+                console.log('Bericht aus URL-Parametern geladen für Coach');
+            } else {
+                // Normal flow: Start questionnaire
+                renderQuestion(0);
+            }
+        }
+        
+        loadFromURLParams();
+    </script>
+
+    <!-- Email Modal -->
+    <div class="modal-overlay" id="email-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">📊</div>
+                <h3 class="modal-title">PDF-Analyse anfordern</h3>
+                <p class="modal-subtitle">Ihre detaillierte Auswertung mit Coaching-Impulsen kommt per E-Mail.</p>
+            </div>
+
+            <form id="email-form" onsubmit="handleEmailSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label" for="user-name">Ihr Name</label>
+                    <input type="text" id="user-name" class="form-input" required>
+                    <div class="error-message" id="name-error">Bitte geben Sie Ihren Namen ein</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="user-email">Ihre E-Mail-Adresse</label>
+                    <input type="email" id="user-email" class="form-input" required>
+                    <div class="error-message" id="email-error">Bitte geben Sie eine gültige E-Mail-Adresse ein</div>
+                </div>
+
+                <div class="form-checkbox-group">
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="newsletter-opt-in">
+                        <label for="newsletter-opt-in">
+                            Ja, ich möchte Coaching-Tipps per Newsletter erhalten (optional)
+                        </label>
+                    </div>
+
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="privacy-accept" required>
+                        <label for="privacy-accept">
+                            Ich akzeptiere die Datenschutzerklärung *
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="modal-btn cancel" onclick="closeEmailModal()">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="modal-btn submit" id="submit-btn">
+                        JETZT ANFORDERN
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
