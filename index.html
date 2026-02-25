@@ -1741,22 +1741,22 @@ Die E-Mail enthält jetzt:
                     text: "Ihr Workflow ist stabil. Bewahren Sie sich diese wertvollen Konzentrationsphasen."
                 }
             },
-            3: { // Sinn & Potenzial
-                kritisch: {
-                    text: "Wenn der Sinn Ihrer Arbeit fehlt, kann Ihre Energie trotz Pausen stetig sinken.",
-                    frage: "Welche Ihrer persönlichen Stärken kommt in Ihrem aktuellen Job zu kurz?"
-                },
-                positiv: {
-                    text: "Sie sehen den Wert Ihrer Arbeit. Das ist der stärkste Motor für nachhaltige Energie."
-                }
-            },
-            4: { // Prioritäten & Klarheit
+            3: { // Prioritäten & Klarheit
                 kritisch: {
                     text: "Unklare Ziele können massiven Stress und das Gefühl von Sinnlosigkeit erzeugen.",
                     frage: "Was ist das eine übergeordnete Ziel, auf das Sie sich heute fokussieren müssen?"
                 },
                 positiv: {
                     text: "Sie wissen, was zu tun ist. Diese Klarheit schützt Sie vor unnötigem Aktionismus."
+                }
+            },
+            4: { // Fokus-Qualität
+                kritisch: {
+                    text: "Häufiges Multitasking kann Ihre Ergebnisqualität und Ihre mentale Ausdauer mindern.",
+                    frage: "Bei welcher Aufgabe lohnt es sich heute, das Smartphone ganz auszuschalten, um volle Präsenz zu zeigen?"
+                },
+                positiv: {
+                    text: "Sie können sich gut konzentrieren – ein wertvolles Asset im heutigen Arbeitsalltag."
                 }
             },
             5: { // Gestaltungsspielraum
@@ -1768,13 +1768,13 @@ Die E-Mail enthält jetzt:
                     text: "Sie nutzen Ihren Spielraum gut. Das fördert Ihre Motivation und Kreativität."
                 }
             },
-            6: { // Wertschätzung
+            6: { // Sinn & Potenzial
                 kritisch: {
-                    text: "Mangelnde Anerkennung kann auf Dauer Ihre Motivation untergraben.",
-                    frage: "Von wem würde Ihnen echte Wertschätzung am meisten bedeuten – und wie könnten Sie das ansprechen?"
+                    text: "Wenn der Sinn Ihrer Arbeit fehlt, kann Ihre Energie trotz Pausen stetig sinken.",
+                    frage: "Welche Ihrer persönlichen Stärken kommt in Ihrem aktuellen Job zu kurz?"
                 },
                 positiv: {
-                    text: "Sie fühlen sich wertgeschätzt. Das ist ein wichtiger Energiespender im Arbeitsalltag."
+                    text: "Sie sehen den Wert Ihrer Arbeit. Das ist der stärkste Motor für nachhaltige Energie."
                 }
             },
             7: { // Komplexität
@@ -1795,13 +1795,13 @@ Die E-Mail enthält jetzt:
                     text: "Ein gutes Team fängt Stress auf. Pflegen Sie diese wichtigen sozialen Kontakte."
                 }
             },
-            9: { // Vertrauensvolles Miteinander
+            9: { // Arbeitstaggestaltung
                 kritisch: {
-                    text: "Fehlendes Vertrauen kann die Zusammenarbeit erheblich erschweren und Energie kosten.",
-                    frage: "Welcher kleine Vertrauensvorschuss könnte heute die Atmosphäre im Team verbessern?"
+                    text: "Ein Arbeitstag ohne echte Pausen kann Raubbau an Ihren geistigen Reserven bedeuten.",
+                    frage: "Wie würde eine Mittagspause aussehen, nach der Sie sich wirklich erfrischt fühlen (statt nur am Handy zu sein)?"
                 },
                 positiv: {
-                    text: "Das Vertrauen im Team trägt Sie. Eine solide Grundlage für gute Zusammenarbeit."
+                    text: "Ihr Rhythmus aus Arbeit und Erholung scheint gut zu funktionieren."
                 }
             },
             10: { // Regeneration
@@ -1813,7 +1813,7 @@ Die E-Mail enthält jetzt:
                     text: "Sie nutzen Ihre Freizeit effektiv. Das sichert Ihre Leistungsfähigkeit für morgen."
                 }
             },
-            11: { // Körperliche Signale
+            11: { // Körperliche Resonanz
                 kritisch: {
                     text: "Körperliche Symptome können ernsthafte Warnsignale für eine Überlastung sein.",
                     frage: "Was will Ihr Körper Ihnen mit dem aktuellen Signal sagen, wenn Sie ganz ehrlich zu sich sind?"
@@ -1832,6 +1832,8 @@ Die E-Mail enthält jetzt:
                 }
             }
         };
+
+        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert        };
 
         // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
         function getCoachingText(dimensionIndex, wert) {        };
@@ -3142,6 +3144,10 @@ Die E-Mail enthält jetzt:
             
             if (resultsParam) {
                 console.log('🔗 Deep-Link erkannt, lade Ergebnisse...');
+
+            // ✅ AKTIVIERE COACH-VIEW (zeigt Coaching-Impulse)
+            document.body.classList.add('is-coach-view');
+            console.log('✅ Coach-View aktiviert - Coaching-Impulse werden angezeigt');
                 
                 // Parse Werte und filtere leere/ungültige
                 const values = resultsParam
