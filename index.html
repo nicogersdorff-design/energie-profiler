@@ -1206,6 +1206,53 @@ Die E-Mail enthält jetzt:
                 font-size: 0.75rem;
             }
         }
+
+        /* ============================================================
+           COACHING-ONLY BEREICHE (nur für Coach sichtbar)
+           ============================================================ */
+        .coaching-only {
+            display: none;  /* Standardmäßig versteckt */
+        }
+        
+        .is-coach-view .coaching-only {
+            display: block;  /* Nur im Coach-View sichtbar */
+        }
+        
+        .coaching-box {
+            background: #F8F9FA;
+            border-left: 4px solid #E85C33;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .coaching-box.positive {
+            background: #F0FFF0;
+            border-left-color: #2D5F4F;
+        }
+        
+        .coaching-text {
+            color: #3C3C3C;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .coaching-question {
+            background: white;
+            border-left: 3px solid #E85C33;
+            padding: 0.8rem;
+            border-radius: 4px;
+            margin-top: 0.8rem;
+            font-style: italic;
+            color: #C85A32;
+            font-size: 0.9rem;
+        }
+        
+        .coaching-question.positive {
+            border-left-color: #2D5F4F;
+            color: #2D5F4F;
+        }
     </style>
 </head>
 <body>
@@ -1961,7 +2008,7 @@ Die E-Mail enthält jetzt:
             renderDysbalanceScore();
             renderRadarChart();
             renderRiskAnalysis();
-            renderCoachingImpulse();  // Zeige Coaching-Impulse
+            // renderCoachingImpulse();  // Entfernt - Coaching-Impulse sind jetzt inline
             renderDimensionsDetails();
         }
 
@@ -2209,110 +2256,7 @@ Die E-Mail enthält jetzt:
         }
 
 
-        // ============================================================
-        // COACHING-IMPULSE AUF DER WEB-SEITE ANZEIGEN
-        // ============================================================
-        function renderCoachingImpulse() {
-            const resultsContainer = document.querySelector('.results-container');
-            if (!resultsContainer) return;
-            
-            // Prüfe ob bereits angezeigt
-            if (document.getElementById('coaching-impulse')) return;
-            
-            console.log('📋 Rendere Coaching-Impulse...');
-            
-            let html = `
-                <div id="coaching-impulse" style="background: var(--white); border-radius: 8px; 
-                     padding: 2rem; margin-top: 2rem; box-shadow: 0 4px 20px var(--shadow);">
-                    <h2 style="color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 1.5rem;">
-                        Ihre persönlichen Coaching-Impulse
-                    </h2>
-                    <p style="color: var(--text-light); margin-bottom: 2rem; font-size: 0.95rem;">
-                        Basierend auf Ihren Antworten haben wir für Sie individuelle Reflexionsfragen zusammengestellt.
-                    </p>
-            `;
-            
-            // Gehe durch alle Dimensionen
-            dimensions.forEach((dim, index) => {
-                const wert = answers[index];
-                if (wert === 3) return;  // Optimale Werte überspringen
-                
-                const coaching = getCoachingText(index, wert);
-                if (!coaching) return;
-                
-                const istKritisch = (wert >= 4 || wert <= 2);
-                
-                // Dimension-Card
-                html += `
-                    <div style="background: ${istKritisch ? '#FFF8DC' : '#F0FFF0'}; 
-                         border-left: 4px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
-                         border-radius: 6px; padding: 1.2rem; margin-bottom: 1.5rem;">
-                        
-                        <div style="display: flex; align-items: center; margin-bottom: 0.8rem;">
-                            <span style="font-size: 1.2rem; margin-right: 0.5rem;">
-                                ${istKritisch ? '⚠️' : '✓'}
-                            </span>
-                            <h3 style="color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; 
-                                 font-size: 1.1rem; margin: 0; font-weight: 600;">
-                                ${dim.category}
-                            </h3>
-                            <span style="margin-left: auto; background: ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
-                                 color: white; padding: 0.2rem 0.6rem; border-radius: 12px; 
-                                 font-size: 0.85rem; font-weight: 600;">
-                                Wert: ${wert}
-                            </span>
-                        </div>
-                        
-                        <p style="color: #3C3C3C; margin-bottom: ${coaching.frage ? '1rem' : '0'}; 
-                             line-height: 1.6; font-size: 0.95rem;">
-                            ${coaching.text}
-                        </p>
-                        
-                        ${coaching.frage ? `
-                            <div style="background: white; border-left: 3px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; 
-                                 padding: 0.8rem 1rem; border-radius: 4px; margin-top: 1rem;">
-                                <p style="color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; 
-                                     font-style: italic; margin: 0; font-size: 0.9rem; font-weight: 500;">
-                                    <strong>Coaching-Frage:</strong><br>
-                                    ${coaching.frage}
-                                </p>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-            
-            html += `
-                <div style="background: #F8F9FA; border-radius: 6px; padding: 1rem; margin-top: 2rem; 
-                     border: 1px solid #DEE2E6;">
-                    <p style="color: #6C757D; margin: 0; font-size: 0.9rem; text-align: center;">
-                        💡 Diese Impulse sind Denkanstöße für Ihre persönliche Reflexion. 
-                        Im persönlichen Coaching-Gespräch entwickeln wir gemeinsam konkrete Handlungsschritte.
-                    </p>
-                </div>
-            </div>
-            `;
-            
-            // Füge nach Risk-Check ein
-            const riskCheck = document.getElementById('risk-indicator');
-            if (riskCheck && riskCheck.nextSibling) {
-                riskCheck.parentNode.insertBefore(
-                    createElementFromHTML(html),
-                    riskCheck.nextSibling
-                );
-            } else {
-                resultsContainer.insertAdjacentHTML('beforeend', html);
-            }
-            
-            console.log('✅ Coaching-Impulse angezeigt');
-        }
-        
-        // Hilfsfunktion: HTML-String in Element umwandeln
-        function createElementFromHTML(htmlString) {
-            const div = document.createElement('div');
-            div.innerHTML = htmlString.trim();
-            return div.firstChild;
-        }
+
 
 
         function renderDimensionsDetails() {
@@ -2342,7 +2286,10 @@ Die E-Mail enthält jetzt:
             if (staerkeAnker.length > 0) {
                 html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #40916C; margin-bottom: 16px; border-left: 4px solid #40916C; padding-left: 16px;">✓ Ihre Kraftquellen</h3>';
                 html += '<div class="dimensions-grid">';
-                staerkeAnker.forEach(({ dim, boxText }) => {
+                staerkeAnker.forEach(({ dim, boxText, index, value }) => {
+                    // Hole Coaching-Impuls (Positiv-Text bei Wert 3)
+                    const coaching = getCoachingText(index, value);
+                    
                     html += `
                         <div class="dimension-card" style="border-left: 4px solid #40916C;">
                             <h3>${dim.category}</h3>
@@ -2350,6 +2297,16 @@ Die E-Mail enthält jetzt:
                             <div class="dimension-analysis">
                                 <strong>${boxText}</strong>
                             </div>
+                            
+                            <!-- POSITIV-TEXT (nur Coach-View) -->
+                            ${coaching ? `
+                            <div class="coaching-only coaching-box positive">
+                                <div class="coaching-text">
+                                    <strong style="color: #2D5F4F;">✓ Stärke:</strong><br>
+                                    ${coaching.text}
+                                </div>
+                            </div>
+                            ` : ''}
                         </div>
                     `;
                 });
@@ -2409,10 +2366,14 @@ Die E-Mail enthält jetzt:
             if (leichteAbweichungen.length > 0) {
                 html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #f4a261; margin-bottom: 16px; border-left: 4px solid #f4a261; padding-left: 16px;">⚠️ Optimierungsfelder</h3>';
                 html += '<div class="dimensions-grid">';
-                leichteAbweichungen.forEach(({ dim, value, boxText }) => {
+                leichteAbweichungen.forEach(({ dim, value, boxText, index }) => {
                     const isMangel = value === 2;
                     const direction = isMangel ? 'Mangel' : 'Übermaß';
                     const polaritaet = isMangel ? 'Mangel/Unterforderung' : 'Übermaß/Überforderung';
+                    
+                    // Hole Coaching-Impuls
+                    const coaching = getCoachingText(index, value);
+                    const istKritisch = value >= 4 || value <= 2;
                     
                     // Erste Coaching-Frage
                     const hauptFrage = dim.coachingQuestions[0];
@@ -2425,6 +2386,24 @@ Die E-Mail enthält jetzt:
                             <div class="dimension-analysis">
                                 <strong>${boxText}</strong>
                             </div>
+                            
+                            <!-- COACHING-IMPULS (nur Coach-View) -->
+                            ${coaching ? `
+                            <div class="coaching-only coaching-box ${istKritisch ? '' : 'positive'}">
+                                <div class="coaching-text">
+                                    <strong style="color: ${istKritisch ? '#E85C33' : '#2D5F4F'};">
+                                        ${istKritisch ? '⚠️' : '✓'} ${istKritisch ? 'Coaching-Impuls' : 'Stärke'}:
+                                    </strong><br>
+                                    ${coaching.text}
+                                </div>
+                                ${coaching.frage ? `
+                                <div class="coaching-question ${istKritisch ? '' : 'positive'}">
+                                    <strong>Coaching-Frage:</strong><br>
+                                    ${coaching.frage}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
                             <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
                                 <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
                             </div>
