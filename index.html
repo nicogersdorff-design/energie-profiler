@@ -1334,6 +1334,21 @@ Die E-Mail enthält jetzt:
             submitBtn.textContent = 'Wird gesendet...';
 
             try {
+                // ============================================================
+                // DATEN-SICHERUNG: Alle Werte garantiert setzen
+                // ============================================================
+                console.log('🔒 Daten-Sicherung: Prüfe alle 13 Dimensionen...');
+                
+                // Gehe durch alle 13 Dimensionen und setze fehlende Werte auf 3
+                for (let i = 0; i < dimensions.length; i++) {
+                    if (answers[i] === undefined || answers[i] === null || !answers[i]) {
+                        console.warn(`⚠️ Dimension ${i + 1} fehlte - setze auf Neutral (3)`);
+                        answers[i] = 3;  // Fallback auf Neutral-Wert
+                    }
+                }
+                
+                console.log('✅ Alle Dimensionen validiert:', answers);
+                
                 const dysbalanceData = calculateDysbalanceIndex();
                 
                 // Detaillierte Liste der Dimensionen
@@ -1342,24 +1357,34 @@ Die E-Mail enthält jetzt:
                 
                 dimensions.forEach((dim, index) => {
                     const wert = answers[index];
-                    // Sicherheitsprüfung: Wenn undefined, überspringe
+                    
+                    // Doppelte Sicherung: Sollte nie mehr undefined sein
                     if (wert === undefined || wert === null) {
-                        console.error(`Fehlende Antwort für Dimension ${index + 1}`);
-                        return; // Diese Dimension überspringen
+                        console.error(`❌ KRITISCH: Dimension ${index + 1} immer noch undefined!`);
+                        answers[index] = 3;  // Nochmaliger Fallback
+                        wert = 3;
                     }
+                    
                     const boxText = dim.boxes[wert - 1];
                     valuesArray.push(wert);
                     dimensionenListe += `${index + 1}. ${dim.category}: ${wert}/5 (${boxText})\n`;
                 });
+                
+                // SICHERER LINK: Filtere trotzdem undefined (absolute Sicherheit)
+                const safeValuesArray = valuesArray.filter(v => v !== undefined && v !== null);
+                
+                console.log(`📊 ValuesArray: ${valuesArray.length} Werte`);
+                console.log(`🔒 Safe ValuesArray: ${safeValuesArray.length} Werte`);
 
-                // REPORT-LINK GENERIEREN
+                // REPORT-LINK GENERIEREN (mit sicherem Array)
                 const baseUrl = window.location.href.split('?')[0];
-                const reportLink = `${baseUrl}?results=${valuesArray.join(',')}`;
+                const reportLink = `${baseUrl}?results=${safeValuesArray.join(',')}`;
                 
                 console.log('🔗 Report-Link generiert:', reportLink);
+                console.log(`📏 Link enthält ${safeValuesArray.length} Werte`);
 
-                // Rohdaten für Excel
-                const rohdatenCSV = valuesArray.join(',');
+                // Rohdaten für Excel (auch sicher)
+                const rohdatenCSV = safeValuesArray.join(',');
 
                 // E-Mail Parameter
                 const emailParams = {
