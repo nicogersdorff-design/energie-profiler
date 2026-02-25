@@ -1323,6 +1323,13 @@ Die E-Mail enthält jetzt:
                 return;
             }
 
+            // Validiere dass alle 13 Fragen beantwortet sind
+            const answeredCount = Object.keys(answers).length;
+            if (answeredCount < dimensions.length) {
+                alert(`Bitte beantworten Sie alle ${dimensions.length} Fragen. Sie haben erst ${answeredCount} beantwortet.`);
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Wird gesendet...';
 
@@ -1335,6 +1342,11 @@ Die E-Mail enthält jetzt:
                 
                 dimensions.forEach((dim, index) => {
                     const wert = answers[index];
+                    // Sicherheitsprüfung: Wenn undefined, überspringe
+                    if (wert === undefined || wert === null) {
+                        console.error(`Fehlende Antwort für Dimension ${index + 1}`);
+                        return; // Diese Dimension überspringen
+                    }
                     const boxText = dim.boxes[wert - 1];
                     valuesArray.push(wert);
                     dimensionenListe += `${index + 1}. ${dim.category}: ${wert}/5 (${boxText})\n`;
@@ -1624,6 +1636,102 @@ Die E-Mail enthält jetzt:
                 ]
             }
         ];
+
+
+        // ============================================================
+        // COACHING-IMPULSE FÜR PDF (Experten-Ratschläge)
+        // ============================================================
+        const coachingTexte = {
+            0: { // Arbeitslast
+                low: "Unterforderung kann demotivierend wirken. Sprechen Sie mit Ihrer Führungskraft über anspruchsvollere Aufgaben oder Projekte.",
+                medium: "Gute Balance gefunden. Achten Sie darauf, diese zu erhalten und sprechen Sie frühzeitig an, wenn sich die Last erhöht.",
+                high: "Prioritäten setzen ist jetzt entscheidend. Identifizieren Sie die 20% der Aufgaben, die 80% des Impacts haben.",
+                extreme: "Sofortiger Handlungsbedarf! Delegieren Sie wo möglich, streichen Sie Nicht-Essentielles. Vereinbaren Sie ein Gespräch über realistische Arbeitsmengen."
+            },
+            1: { // Führung & Support
+                low: "Fehlende Führung schafft Orientierungslosigkeit. Fordern Sie regelmäßige 1:1-Gespräche und klare Erwartungen ein.",
+                medium: "Solide Basis vorhanden. Nutzen Sie Ihre Führungskraft als Sparringspartner für strategische Fragen.",
+                high: "Gute Führung ist ein Asset. Schützen Sie diese Ressource durch offene Kommunikation.",
+                extreme: "Starke Überbehütung kann einengen. Kommunizieren Sie Ihren Wunsch nach mehr Eigenverantwortung."
+            },
+            2: { // Arbeitsfluss
+                low: "Ständige Unterbrechungen kosten bis zu 40% Produktivität. Etablieren Sie fokussierte Zeitblöcke (z.B. Deep Work morgens).",
+                medium: "Flow-Momente sind möglich. Schützen Sie diese Phasen durch bewusste Verfügbarkeitssteuerung.",
+                high: "Optimale Bedingungen. Dokumentieren Sie, was funktioniert, um diese Muster zu festigen.",
+                extreme: "Zu viel Isolation kann schaden. Stellen Sie sicher, dass Sie trotzdem im Austausch bleiben."
+            },
+            3: { // Sinn & Potenzial
+                low: "Sinn-Vakuum ist ein starker Demotivator. Reflektieren Sie: Welche Aspekte Ihrer Arbeit sind intrinsisch wertvoll für Sie?",
+                medium: "Grundlegende Verbindung vorhanden. Verstärken Sie die sinnstiftenden Elemente bewusst.",
+                high: "Starke Sinn-Resonanz. Dies ist Ihr Energie-Tank - schützen und pflegen Sie ihn.",
+                extreme: "Übermäßige Identifikation kann zu Burn-out führen. Etablieren Sie auch Sinn außerhalb der Arbeit."
+            },
+            4: { // Prioritäten & Klarheit
+                low: "Unklare Prioritäten führen zu reaktivem Arbeiten. Etablieren Sie ein wöchentliches Prioritäten-Review.",
+                medium: "Grundrichtung ist klar. Verfeinern Sie Ihre Priorisierungs-Kriterien kontinuierlich.",
+                high: "Kristallklare Ausrichtung. Nutzen Sie diese Klarheit, um Nein zu Ablenkungen zu sagen.",
+                extreme: "Zu starre Fokussierung kann Chancen verpassen lassen. Bleiben Sie auch offen für Unerwartetes."
+            },
+            5: { // Gestaltungsspielraum
+                low: "Fehlende Autonomie ist Top-Stressfaktor. Identifizieren Sie kleine Bereiche, wo Sie Entscheidungen übernehmen können.",
+                medium: "Gesunde Balance zwischen Vorgaben und Freiraum. Nutzen Sie Ihre Autonomie bewusst.",
+                high: "Viel Gestaltungsfreiheit. Ein Privileg und eine Verantwortung - nutzen Sie es weise.",
+                extreme: "Zu viel Freiheit ohne Struktur kann überfordern. Schaffen Sie sich selbst Leitplanken."
+            },
+            6: { // Wertschätzung
+                low: "Mangelnde Anerkennung nagt an Motivation. Machen Sie Ihre Erfolge sichtbar und fordern Sie Feedback ein.",
+                medium: "Angemessene Wertschätzung vorhanden. Kultivieren Sie auch Selbstwertschätzung.",
+                high: "Sie werden gut gesehen. Geben Sie diese Wertschätzung auch an andere weiter.",
+                extreme: "Übermäßiges Lob kann unaufrichtig wirken. Achten Sie auf die Substanz dahinter."
+            },
+            7: { // Komplexität
+                low: "Unterforderung lässt Potenziale ungenutzt. Suchen Sie nach komplexeren Herausforderungen.",
+                medium: "Angemessene Komplexität hält Sie engagiert ohne zu überfordern. Optimale Lernzone.",
+                high: "Hohe Anforderungen sind Wachstumschancen. Strukturieren Sie Komplexes in handhabbare Teile.",
+                extreme: "Überkomplexität lähmt. Holen Sie sich Unterstützung, delegieren Sie, vereinfachen Sie wo möglich."
+            },
+            8: { // Soziale Einbindung
+                low: "Isolation ist Gesundheitsrisiko. Initiieren Sie aktiv soziale Kontakte, auch virtuell.",
+                medium: "Gesunde soziale Balance. Pflegen Sie diese Beziehungen kontinuierlich.",
+                high: "Starkes Netzwerk. Dies ist Ihr Puffer in Stress-Zeiten - investieren Sie weiter.",
+                extreme: "Zu viel Soziales kann erschöpfen. Schützen Sie auch Ihre Rückzugszeiten."
+            },
+            9: { // Vertrauensvolles Miteinander
+                low: "Misstrauen vergiftet die Atmosphäre. Beginnen Sie mit kleinen Vertrauensvorschüssen.",
+                medium: "Grundvertrauen ist da. Stärken Sie es durch Verlässlichkeit und Offenheit.",
+                high: "Psychologische Sicherheit vorhanden. Ein unschätzbarer Vorteil für Innovation.",
+                extreme: "Blindes Vertrauen kann naiv sein. Bleiben Sie wachsam für Warnsignale."
+            },
+            10: { // Regeneration
+                low: "Fehlende Erholung führt zu Erschöpfungsspirale. Etablieren Sie non-negotiable Regenerations-Rituale.",
+                medium: "Grundlegende Erholung vorhanden. Optimieren Sie Qualität über Quantität.",
+                high: "Exzellente Work-Life-Balance. Sie haben verstanden, dass Pausen Produktivität steigern.",
+                extreme: "Zu viel Freizeit kann auch Unzufriedenheit schaffen. Achten Sie auf sinnvolle Aktivität."
+            },
+            11: { // Körperliche Signale
+                low: "Ihr Körper sendet Alarmsignale. Nehmen Sie diese ernst - sie sind Frühwarnsystem.",
+                medium: "Stabile körperliche Verfassung. Nutzen Sie präventive Gesundheitsmaßnahmen.",
+                high: "Optimale Vitalität. Sie investieren klug in Ihre wichtigste Ressource: Gesundheit.",
+                extreme: "Übertriebener Gesundheitsfokus kann auch Stress erzeugen. Finden Sie eine entspannte Achtsamkeit."
+            },
+            12: { // Lebenskontext & Care-Arbeit
+                low: "Private Belastungen summieren sich. Organisieren Sie Entlastung, delegieren Sie, bitten Sie um Hilfe.",
+                medium: "Privates ist im Gleichgewicht. Schützen Sie diese Balance aktiv.",
+                high: "Erfüllendes Privatleben gibt Energie. Ein starkes Fundament für berufliche Herausforderungen.",
+                extreme: "Zu viele private Verpflichtungen können auslauge. Prüfen Sie, wo Sie vereinfachen können."
+            }
+        };
+
+        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
+        function getCoachingText(dimensionIndex, wert) {
+            const texte = coachingTexte[dimensionIndex];
+            if (!texte) return null;
+            
+            if (wert <= 2) return texte.low;
+            else if (wert === 3) return texte.medium;
+            else if (wert === 4) return texte.high;
+            else return texte.extreme;  // 5
+        }
 
         let currentQuestion = 0;
         let answers = {};
@@ -2429,6 +2537,30 @@ Die E-Mail enthält jetzt:
                 pdf.text(boxTextLines, margin + 10, y);
                 y += boxTextLines.length * 5 + 4;
                 
+                // ============================================================
+                // COACHING-IMPULS (EXPERTEN-RAT)
+                // ============================================================
+                if (value !== 3) {
+                    const coachingText = getCoachingText(index, value);
+                    if (coachingText) {
+                        pdf.setFillColor(255, 248, 220);  // Helles Gelb/Beige
+                        pdf.rect(margin + 10, y - 2, contentWidth - 20, 18, 'F');
+                        
+                        pdf.setTextColor(200, 90, 50);  // Orange-rot
+                        pdf.setFontSize(9);
+                        pdf.setFont(undefined, 'bold');
+                        pdf.text('💡 Experten-Rat:', margin + 12, y + 3);
+                        y += 7;
+                        
+                        pdf.setTextColor(60, 60, 60);
+                        pdf.setFont(undefined, 'normal');
+                        pdf.setFontSize(8);
+                        const coachingLines = pdf.splitTextToSize(coachingText, contentWidth - 30);
+                        pdf.text(coachingLines, margin + 12, y);
+                        y += coachingLines.length * 4 + 6;
+                    }
+                }
+                
                 if (value !== 3) {
                     pdf.setTextColor(102, 102, 102);
                     pdf.setFontSize(9);
@@ -2738,6 +2870,30 @@ Die E-Mail enthält jetzt:
                 pdf.text(boxTextLines, margin + 10, y);
                 y += boxTextLines.length * 5 + 4;
                 
+                // ============================================================
+                // COACHING-IMPULS (EXPERTEN-RAT)
+                // ============================================================
+                if (value !== 3) {
+                    const coachingText = getCoachingText(index, value);
+                    if (coachingText) {
+                        pdf.setFillColor(255, 248, 220);  // Helles Gelb/Beige
+                        pdf.rect(margin + 10, y - 2, contentWidth - 20, 18, 'F');
+                        
+                        pdf.setTextColor(200, 90, 50);  // Orange-rot
+                        pdf.setFontSize(9);
+                        pdf.setFont(undefined, 'bold');
+                        pdf.text('💡 Experten-Rat:', margin + 12, y + 3);
+                        y += 7;
+                        
+                        pdf.setTextColor(60, 60, 60);
+                        pdf.setFont(undefined, 'normal');
+                        pdf.setFontSize(8);
+                        const coachingLines = pdf.splitTextToSize(coachingText, contentWidth - 30);
+                        pdf.text(coachingLines, margin + 12, y);
+                        y += coachingLines.length * 4 + 6;
+                    }
+                }
+                
                 if (value !== 3) {
                     pdf.setTextColor(102, 102, 102);
                     pdf.setFontSize(9);
@@ -2828,25 +2984,52 @@ Die E-Mail enthält jetzt:
             
             if (resultsParam) {
                 console.log('🔗 Deep-Link erkannt, lade Ergebnisse...');
-                const values = resultsParam.split(',').map(Number);
                 
-                // Validierung: 13 Werte, alle zwischen 1-5
-                if (values.length === dimensions.length && values.every(v => v >= 1 && v <= 5)) {
-                    // Ergebnisse direkt setzen
-                    answers = {};
-                    values.forEach((val, index) => { answers[index] = val; });
+                // Parse Werte und filtere leere/ungültige
+                const values = resultsParam
+                    .split(',')
+                    .map(v => v.trim())  // Trimme Whitespace
+                    .filter(v => v !== '')  // Filtere leere Strings
+                    .map(Number)
+                    .filter(v => !isNaN(v));  // Filtere NaN
+                
+                console.log(`📊 Geladene Werte: ${values.length} von ${dimensions.length} erwartet`);
+                
+                // Robuste Validierung
+                if (values.length === dimensions.length) {
+                    const allValid = values.every(v => v >= 1 && v <= 5);
                     
-                    // Fragebogen und Hero ausblenden
-                    document.getElementById('questionnaire').style.display = 'none';
-                    const heroSection = document.querySelector('.hero-section');
-                    if (heroSection) heroSection.style.display = 'none';
-                    
-                    // Ergebnisse anzeigen
-                    showResults();
-                    console.log('✅ Ergebnisse aus URL geladen');
+                    if (allValid) {
+                        // Ergebnisse direkt setzen
+                        answers = {};
+                        values.forEach((val, index) => { 
+                            answers[index] = val;
+                        });
+                        
+                        console.log('✅ Alle Werte valide, setze answers:', answers);
+                        
+                        // Fragebogen und Hero ausblenden
+                        const questionnaireEl = document.getElementById('questionnaire');
+                        if (questionnaireEl) questionnaireEl.style.display = 'none';
+                        
+                        const heroSection = document.querySelector('.hero-section');
+                        if (heroSection) heroSection.style.display = 'none';
+                        
+                        // Ergebnisse ERZWINGEN
+                        setTimeout(() => {
+                            showResults();
+                            console.log('✅ showResults() wurde aufgerufen');
+                        }, 100);  // Kleines Timeout für DOM-Bereitschaft
+                        
+                    } else {
+                        console.warn('⚠️ Einige Werte außerhalb 1-5:', values);
+                        alert('Ungültige URL-Parameter. Bitte füllen Sie den Fragebogen aus.');
+                        renderQuestion(0);
+                    }
                 } else {
-                    console.warn('⚠️ Ungültige URL-Parameter');
-                    renderQuestion(0); // Normaler Start - erste Frage
+                    console.warn(`⚠️ Falsche Anzahl Werte: ${values.length} statt ${dimensions.length}`);
+                    alert(`Ungültige URL-Parameter (${values.length} Werte statt ${dimensions.length}). Bitte füllen Sie den Fragebogen aus.`);
+                    renderQuestion(0);
                 }
             } else {
                 console.log('ℹ️ Normaler Start - kein Deep-Link');
