@@ -1,5 +1,85 @@
 <!DOCTYPE html>
 <html lang="de">
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                 JOB-VITALITÄTS-CHECK - SETUP-ANLEITUNG                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📧 EMAILJS KONFIGURATION - SO EINFACH WIE KOPIEREN & EINFÜGEN:
+
+SCHRITT 1: Keys aus Ihrer alten "job-zufriedenheits-check (21).html" kopieren
+───────────────────────────────────────────────────────────────────────────────
+
+1. Öffnen Sie "job-zufriedenheits-check (21).html" in einem Texteditor
+2. Suchen Sie (Strg+F) nach: emailjs.init
+3. Kopieren Sie den Key zwischen den Anführungszeichen
+   Beispiel: emailjs.init("wPFHKOdC5Ozp7AuWM")
+                           ^^^^^^^^^^^^^^^^^^^
+                           DAS ist Ihr Public Key
+
+4. Suchen Sie in DIESER Datei nach: emailjs.init("HIER-IHREN-PUBLIC-KEY-EINTRAGEN")
+5. Ersetzen Sie den Platzhalter mit Ihrem kopierten Key
+
+
+SCHRITT 2: Service ID und Template ID kopieren
+───────────────────────────────────────────────────────────────────────────────
+
+1. Suchen Sie in "job-zufriedenheits-check (21).html" nach: emailjs.send
+2. Kopieren Sie die beiden IDs:
+   await emailjs.send(
+       'service_xoea2cq',    ← DAS ist Ihre Service ID
+       'template_fehq90l',   ← DAS ist Ihre Template ID
+       emailParams
+   );
+
+3. Suchen Sie in DIESER Datei nach: emailjs.send
+4. Ersetzen Sie die Platzhalter mit Ihren kopierten IDs
+
+
+DAS WAR'S! 🎉
+───────────────────────────────────────────────────────────────────────────────
+
+Sie müssen bei EmailJS NICHTS neu einrichten!
+Die E-Mails kommen automatisch mit den neuen 13 Dimensionen an.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📊 GESENDETE DATEN (neu):
+
+Die E-Mail enthält jetzt:
+✓ Nutzer-Name & E-Mail
+✓ Newsletter Opt-in
+✓ Energie-Index in %
+✓ 13 Dimensionen mit Namen und Werten (1-5):
+  1. Arbeitslast
+  2. Führung & Support
+  3. Arbeitsfluss
+  4. Sinn & Potenzial
+  5. Prioritäten & Klarheit
+  6. Gestaltungsspielraum
+  7. Wertschätzung
+  8. Komplexität
+  9. Soziale Einbindung
+  10. Vertrauensvolles Miteinander
+  11. Regeneration
+  12. Körperliche Signale
+  13. Lebenskontext & Care-Arbeit
+✓ Rohdaten im CSV-Format für Excel
+✓ Datum & Uhrzeit
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎨 DESIGN & FEATURES:
+
+✓ Kompaktes Layout (minimales Scrollen)
+✓ Farben: Orange #E85C33, Blue #4A5D7C, Purple #8B6B9E
+✓ Fonts: Montserrat (Headings), Open Sans (Body)
+✓ Intelligenter Risiko-Check mit Dimensionsbenennung
+✓ PDF-Export im gleichen Stil wie Job-Check
+✓ Teaser-Konzept (Details nur im PDF)
+
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1203,12 +1283,14 @@
     </div>
 
     <script>
-        // Initialize EmailJS
+        // ============================================================
+        // EmailJS KONFIGURATION - TRAGEN SIE HIER IHRE KEYS EIN
+        // ============================================================
+        // 👇 Kopieren Sie Ihren Public Key von EmailJS hier ein:
         (function() {
-            emailjs.init("wPFHKOdC5Ozp7AuWM"); // EmailJS Public Key
+            emailjs.init("wPFHKOdC5Ozp7AuWM"); // ← z.B. "wPFHKOdC5Ozp7AuWM"
         })();
-
-        // Store results data globally
+        // ============================================================   // Store results data globally
         let resultsData = null;
 
         // Print Modal Functions
@@ -1246,41 +1328,60 @@
             submitBtn.textContent = 'Wird gesendet...';
             
             try {
-                // URL mit allen Parametern generieren
-                const baseUrl = window.location.origin + window.location.pathname;
-                const params = new URLSearchParams();
-                
-                // Alle Antworten als Parameter hinzufügen
-                Object.keys(answers).forEach(key => {
-                    params.append(`dim${key}`, answers[key]);
-                });
-                
-                const reportUrl = `${baseUrl}?${params.toString()}#results`;
-                
                 // Energie-Index berechnen
                 const dysbalanceData = calculateDysbalanceIndex();
                 
-                // E-Mail an Coach senden
+                // ============================================================
+                // DIMENSIONEN-DATEN FÜR STATISTIK VORBEREITEN
+                // ============================================================
+                // Erstelle detaillierte Liste aller Dimensionen mit Werten
+                let dimensionenListe = '';
+                dimensions.forEach((dim, index) => {
+                    const wert = answers[index];
+                    const boxText = dim.boxes[wert - 1];
+                    dimensionenListe += `${index + 1}. ${dim.category}: ${wert}/5 (${boxText})\n`;
+                });
+                
+                // Erstelle auch Rohdaten-String für Excel-Import
+                const rohdaten = Object.keys(answers).map(key => answers[key]).join(',');
+                
+                // ============================================================
+                // EMAIL-PARAMETER ZUSAMMENSTELLEN
+                // ============================================================
                 const emailParams = {
-                    to_email: 'nico.gersdorff.coaching@gmail.com',
+                    // Nutzer-Daten
                     user_name: userName,
                     user_email: userEmail,
                     newsletter: newsletterOptIn ? 'Ja' : 'Nein',
+                    
+                    // Ergebnis-Übersicht
                     energie_index: dysbalanceData.percentage + '%',
                     interpretation: dysbalanceData.interpretation,
-                    report_link: reportUrl,
-                    date: new Date().toLocaleDateString('de-DE')
+                    
+                    // Detaillierte Dimensionen-Daten
+                    dimensionen_liste: dimensionenListe,
+                    
+                    // Rohdaten für Statistik (CSV-Format)
+                    rohdaten_csv: rohdaten,
+                    
+                    // Datum
+                    datum: new Date().toLocaleDateString('de-DE'),
+                    zeit: new Date().toLocaleTimeString('de-DE')
                 };
                 
-                console.log('Sende E-Mail an Coach mit Parametern:', emailParams);
+                console.log('Sende E-Mail mit Parametern:', emailParams);
                 
+                // ============================================================
+                // EMAILJS VERSENDEN - TRAGEN SIE HIER IHRE IDS EIN
+                // ============================================================
+                // 👇 Kopieren Sie Ihre Service ID und Template ID von EmailJS hier ein:
                 await emailjs.send(
-                    'service_xoea2cq',    // Service ID
-                    'template_coach_notification',  // Template ID für Coach
+                    'service_xoea2cq',      // ← z.B. "service_xoea2cq"
+                    'template_fehq90l',     // ← z.B. "template_fehq90l"
                     emailParams
                 );
                 
-                console.log('E-Mail erfolgreich gesendet');
+                console.log('✅ E-Mail erfolgreich gesendet');
                 
                 // Modal schließen
                 closeEmailModal();
@@ -1289,7 +1390,7 @@
                 showSuccessMessage();
                 
             } catch (error) {
-                console.error('EmailJS Fehler:', error);
+                console.error('❌ EmailJS Fehler:', error);
                 alert('Es gab ein Problem beim Versenden. Bitte versuchen Sie es erneut oder kontaktieren Sie nico.gersdorff.coaching@gmail.com direkt.');
             } finally {
                 submitBtn.disabled = false;
