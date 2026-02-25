@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Energie-Profiler - Vitalitäts-Check</title>
+    <title>Job-Vitalitäts-Check - Vitalitäts-Check</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
 
         .top-bar {
             background: linear-gradient(90deg, var(--primary-blue) 0%, var(--accent-purple) 100%);
-            height: 8px;
+            height: 5px;
             position: fixed;
             top: 0;
             left: 0;
@@ -33,9 +33,9 @@
 
         .header {
             background: var(--white, #FFFFFF);
-            padding: 1.5rem 2rem;
+            padding: 0.8rem 1.5rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin-top: 8px;
+            margin-top: 5px;
         }
 
         .header-content {
@@ -53,16 +53,16 @@
         }
 
         .logo-lines {
-            width: 50px;
-            height: 50px;
+            width: 35px;
+            height: 35px;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            padding: 8px 0;
+            padding: 5px 0;
         }
 
         .logo-line {
-            height: 3px;
+            height: 2px;
             background: var(--primary-orange);
             border-radius: 2px;
         }
@@ -75,23 +75,23 @@
 
         .logo-text h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-dark);
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.15rem;
         }
 
         .logo-text p {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--text-light);
         }
 
         .hero-section {
             background: var(--white, #FFFFFF);
             border-radius: 8px;
-            padding: 2.5rem 2rem;
+            padding: 1.3rem 1.5rem;
             box-shadow: 0 4px 20px var(--shadow, rgba(74, 93, 124, 0.15));
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             position: relative;
             overflow: hidden;
         }
@@ -102,31 +102,30 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
+            height: 4px;
             background: linear-gradient(90deg, var(--primary-orange) 0%, var(--primary-blue) 50%, var(--accent-purple) 100%);
         }
 
         .hero-title {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--primary-blue);
-            margin-bottom: 1rem;
+            margin-bottom: 0.6rem;
+            line-height: 1.3;
             text-transform: uppercase;
             letter-spacing: -0.5px;
         }
 
         .hero-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-description {
             font-size: 1.05rem;
             color: var(--text-dark);
-            line-height: 1.8;
+            margin-bottom: 0;
+            line-height: 1.5;
+            font-weight: 500;
         }
+
+
 
         * {
             margin: 0;
@@ -142,7 +141,7 @@
             color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
+            padding: 1.2rem;
         }
 
         .container {
@@ -187,7 +186,7 @@
 
         .progress-bar {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: var(--border);
             border-radius: 3px;
             margin: 16px 0 12px;
@@ -205,7 +204,7 @@
             background: var(--surface);
             border-radius: 12px;
             padding: 28px;
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
             box-shadow: 0 2px 16px var(--shadow);
             opacity: 0;
             transform: translateY(20px);
@@ -609,7 +608,7 @@
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            margin-top: 8px;
+            margin-top: 5px;
             opacity: 0.7;
         }
 
@@ -853,8 +852,8 @@
         .modal-content {
             background: #FFFFFF;
             opacity: 1;
-            border-radius: 12px;
-            padding: 2.5rem;
+            border-radius: 10px;
+            padding: 2rem;
             max-width: 500px;
             width: 100%;
             max-height: 90vh;
@@ -1107,6 +1106,26 @@
                 color-adjust: exact;
             }
         }
+    
+        /* Mobile Optimierung für längere Überschriften */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.3rem;
+                line-height: 1.25;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .logo-text h1 {
+                font-size: 1rem;
+            }
+            
+            .logo-text p {
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1132,9 +1151,9 @@
 
     <div class="container">
         <div class="hero-section">
-            <h2 class="hero-title">Energie-Profiler</h2>
-            <p class="hero-subtitle">Ihr Vitalitäts-Check in 13 Dimensionen</p>
-            <p class="hero-description">Diese Analyse deckt auf, wie effizient Ihr System arbeitet. Identifizieren Sie Ihre 'Flow-Zonen' und finden Sie heraus, wo Sie wertvolle Energie durch Dauerstress verlieren oder durch mangelnde Impulse innerlich leerlaufen.</p>
+            <h2 class="hero-title">Job-Vitalitäts-Check: Wo verlierst du Energie?</h2>
+            <p class="hero-subtitle">Identifiziere in 3 Minuten deine persönlichen Stress-Treiber und finde zurück in deine Kraft.</p>
+            
         </div>
 
         <div id="questionnaire">
@@ -1284,7 +1303,7 @@
             const successHTML = `
                 <div id="success-message" style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
                      border: 2px solid #28a745; border-radius: 12px; padding: 20px; 
-                     margin-bottom: 28px; text-align: center;">
+                     margin-bottom: 1rem; text-align: center;">
                     <h3 style="color: #155724; margin: 0 0 8px 0; font-size: 1.3rem;">
                         ✅ Vielen Dank!
                     </h3>
@@ -1431,8 +1450,8 @@
                     "Geistig unterfordert",
                     "Zu simple Routine",
                     "Genau mein Niveau",
-                    "Komplexität der Aufgaben und/oder Technik sehr hoch",
-                    "Komplexität der Aufgaben und/oder Technik überfordert mich"
+                    "Hohe Komplexität: Systeme fordern mich oft maximal",
+                    "Technik-Hürde: Ich fühle mich technologisch abgehängt"
                 ],
                 coachingQuestions: [
                     "Welche Aufgaben würden Sie wirklich herausfordern, ohne zu überfordern?",
@@ -2072,7 +2091,7 @@
             pdf.setTextColor(255, 255, 255);
             pdf.setFontSize(24);
             pdf.setFont(undefined, 'bold');
-            pdf.text('Energie-Profiler - Ihre Auswertung', margin, 25);
+            pdf.text("Job-Vitalitäts-Check - Ihre Auswertung", margin, 25);
             pdf.setFontSize(11);
             pdf.setFont(undefined, 'normal');
             pdf.text('Analyse Ihrer Arbeits-Balance in 13 Dimensionen', margin, 35);
@@ -2371,7 +2390,7 @@
             pdf.setTextColor(255, 255, 255);
             pdf.setFontSize(24);
             pdf.setFont(undefined, 'bold');
-            pdf.text('Energie-Profiler - Ihre Auswertung', margin, 25);
+            pdf.text("Job-Vitalitäts-Check - Ihre Auswertung", margin, 25);
             pdf.setFontSize(11);
             pdf.setFont(undefined, 'normal');
             pdf.text('Analyse Ihrer Arbeits-Balance in 13 Dimensionen', margin, 35);
