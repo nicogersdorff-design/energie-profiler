@@ -1210,11 +1210,11 @@ Die E-Mail enthält jetzt:
         /* ============================================================
            COACHING-ONLY BEREICHE (nur für Coach sichtbar)
            ============================================================ */
-        .coaching-only {
+        .coaching-impuls {
             display: none;  /* Standardmäßig versteckt */
         }
         
-        .is-coach-view .coaching-only {
+        .is-coach-view .coaching-impuls {
             display: block;  /* Nur im Coach-View sichtbar */
         }
         
@@ -1714,121 +1714,290 @@ Die E-Mail enthält jetzt:
         // COACHING-IMPULSE FÜR PDF (Konditional + Coaching-Fragen)
         // ============================================================
         const coachingTexte = {
-            0: { // Arbeitslast
-                kritisch: {
-                    text: "Ein dauerhaft hoher Workload kann langfristig zu Erschöpfung oder Burnout führen.",
-                    frage: "Welche zwei Aufgaben könnten wir sofort streichen oder delegieren, um Ihren Terminkalender zu entlasten?"
+            0: { // 1. Arbeitslast
+                1: {
+                    text: "Ein extrem niedriger Workload kann dazu führen, dass Sie Ihre Leistungsfähigkeit als bedeutungslos erleben.",
+                    impuls: "Welches fordernde Projekt würde Ihre Energie sofort reaktivieren?"
                 },
-                positiv: {
-                    text: "Ihre Arbeitslast scheint aktuell bewältigbar. Achten Sie auf Pufferzeiten für Unvorhergesehenes."
+                2: {
+                    text: "Eine geringe Last kann schleichend zu einem Verlust an Antrieb führen.",
+                    impuls: "Wo genau im Job möchten Sie proaktiv mehr Verantwortung übernehmen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Was hilft Ihnen aktuell am meisten, um Ihr Pensum so stabil zu halten?"
+                },
+                4: {
+                    text: "Eine hohe Last kann Ihre Wahrnehmung für das Wesentliche bereits trüben.",
+                    impuls: "Welche eine Aufgabe können Sie heute streichen oder delegieren?"
+                },
+                5: {
+                    text: "Eine massive Überlastung kann kurzfristig Ihre Gesundheit gefährden.",
+                    impuls: "Was muss passieren, damit Sie heute sofort 20% Druck aus dem Kessel nehmen?"
                 }
             },
-            1: { // Führung & Support
-                kritisch: {
-                    text: "Fehlender Rückhalt oder Mikromanagement kann Ihre Energie im Alltag massiv einschränken.",
-                    frage: "Welches konkrete Gespräch mit Ihrer Führungskraft würde jetzt die größte Entlastung bringen?"
+            1: { // 2. Führung
+                1: {
+                    text: "Eine fehlende Führung kann ein tiefes Gefühl der Orientierungslosigkeit erzeugen.",
+                    impuls: "Welches Gespräch mit wem würde Ihnen jetzt wieder Halt geben?"
                 },
-                positiv: {
-                    text: "Sie fühlen sich gut unterstützt – eine wichtige Basis für Ihre langfristige Leistungsfähigkeit."
+                2: {
+                    text: "Zu wenig Feedback kann dazu führen, dass Sie sich in Ihrer Rolle nicht gesehen fühlen.",
+                    impuls: "Wie können Sie aktiv nach der Anerkennung fragen, die Sie brauchen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Wie nutzen Sie den vorhandenen Rückhalt Ihrer Führungskraft aktuell für Ihre Ziele?"
+                },
+                4: {
+                    text: "Ein hoher Erwartungsdruck kann Ihre Handlungsfreiheit spürbar einschränken.",
+                    impuls: "Welches klärende Wort gegenüber Ihrem Vorgesetzten würde Sie jetzt entlasten?"
+                },
+                5: {
+                    text: "Ein massives Führungsdefizit kann Ihre psychische Belastbarkeit bald erschöpfen.",
+                    impuls: "Wer im Unternehmen kann jetzt als neutraler Vermittler für Sie fungieren?"
                 }
             },
-            2: { // Arbeitsfluss
-                kritisch: {
-                    text: "Ständige Unterbrechungen können verhindern, dass Sie in einen produktiven Fokus kommen.",
-                    frage: "Wie könnten Sie in Ihrem Arbeitsalltag eine tägliche 'stille Stunde' ohne E-Mails und Telefon etablieren?"
+            2: { // 3. Arbeitsfluss
+                1: {
+                    text: "Ein völliger Stillstand im Arbeitsfluss kann Ihre geistige Wachheit reduzieren.",
+                    impuls: "Welches komplexe Thema würde Ihren Forschergeist wieder wecken?"
                 },
-                positiv: {
-                    text: "Ihr Workflow ist stabil. Bewahren Sie sich diese wertvollen Konzentrationsphasen."
+                2: {
+                    text: "Gelegentlicher Leerlauf kann dazu führen, dass Sie Zeit ungenutzt verstreichen lassen.",
+                    impuls: "Welches wichtige Projekt haben Sie bisher aufgeschoben?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Wie schützen Sie Ihre erfolgreichen Konzentrationsphasen gegen äußere Störungen?"
+                },
+                4: {
+                    text: "Häufige Störungen kann Ihren Fokus bereits spürbar schwächen.",
+                    impuls: "Wie sähe eine tägliche \'stille Stunde\' ohne Erreichbarkeit für Sie aus?"
+                },
+                5: {
+                    text: "Eine permanente Fragmentierung Ihrer Arbeit kann Sie massiv zermürben.",
+                    impuls: "Wo können Sie heute radikal alle Kommunikationskanäle für zwei Stunden schließen?"
                 }
             },
-            3: { // Prioritäten & Klarheit
-                kritisch: {
-                    text: "Unklare Ziele können massiven Stress und das Gefühl von Sinnlosigkeit erzeugen.",
-                    frage: "Was ist das eine übergeordnete Ziel, auf das Sie sich heute fokussieren müssen?"
+            3: { // 4. Klarheit
+                1: {
+                    text: "Wenn alles zu simpel erscheint, kann Ihre Orientierung und Ihr Fokus schwinden.",
+                    impuls: "Welche neue Herausforderung würde Ihren Sinn für Richtung wieder schärfen?"
                 },
-                positiv: {
-                    text: "Sie wissen, was zu tun ist. Diese Klarheit schützt Sie vor unnötigem Aktionismus."
+                2: {
+                    text: "Die Unterforderung kann dazu führen, dass Sie den Sinn Ihrer Aufgaben hinterfragen.",
+                    impuls: "Was muss sich ändern, damit Sie den Wert Ihrer Arbeit wieder spüren?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Inwiefern hilft Ihnen Ihre aktuelle Klarheit, auch in hektischen Zeiten ruhig zu bleiben?"
+                },
+                4: {
+                    text: "Unklare Ziele kann wie ein Kraft raubender Nebel auf Ihr Gemüt wirken.",
+                    impuls: "Wenn Sie heute nur ein einziges Ziel erreichen dürften, welches wäre das?"
+                },
+                5: {
+                    text: "Ein völliger Mangel an Klarheit kann Sie in einen Zustand der Handlungsunfähigkeit führen.",
+                    impuls: "Was ist die eine Kernaufgabe, auf die Sie sich jetzt sofort reduzieren müssen?"
                 }
             },
-            4: { // Fokus-Qualität
-                kritisch: {
-                    text: "Häufiges Multitasking kann Ihre Ergebnisqualität und Ihre mentale Ausdauer mindern.",
-                    frage: "Bei welcher Aufgabe lohnt es sich heute, das Smartphone ganz auszuschalten, um volle Präsenz zu zeigen?"
+            4: { // 5. Fokus
+                1: {
+                    text: "Geistige Unterforderung kann dazu führen, dass Sie innerlich bereits abgeschaltet haben.",
+                    impuls: "Welche anspruchsvolle Aufgabe würde Ihre volle Präsenz erfordern?"
                 },
-                positiv: {
-                    text: "Sie können sich gut konzentrieren – ein wertvolles Asset im heutigen Arbeitsalltag."
+                2: {
+                    text: "Mangelnde Reize kann Ihre mentale Ausdauer schleichend reduzieren.",
+                    impuls: "Bei welchem Thema würden Sie gerne wieder tiefer einsteigen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Was ist Ihr wichtigster Anker im Alltag, um fokussiert bei einer Sache zu bleiben?"
+                },
+                4: {
+                    text: "Ständiges Task-Switching kann Ihre kognitiven Reserven bereits überfordern.",
+                    impuls: "Wo würde Ihnen heute radikaler Fokus auf nur eine Sache am meisten bringen?"
+                },
+                5: {
+                    text: "Eine dauerhafte Überreizung kann zu einem totalen Fokus-Verlust führen.",
+                    impuls: "Bei welcher Aufgabe lohnt es sich heute, das Smartphone ganz auszuschalten?"
                 }
             },
-            5: { // Gestaltungsspielraum
-                kritisch: {
-                    text: "Zu wenig Einfluss auf die eigenen Aufgaben kann zu Frust und innerer Kündigung führen.",
-                    frage: "In welchem kleinen Bereich könnten Sie sich heute mehr Eigenverantwortung zurückholen?"
+            5: { // 6. Spielraum
+                1: {
+                    text: "Ein \'goldener Käfig\' ohne Aufgaben kann Ihre Selbstwirksamkeit lähmen.",
+                    impuls: "Wo möchten Sie mutiger entscheiden, um wieder Wirksamkeit zu spüren?"
                 },
-                positiv: {
-                    text: "Sie nutzen Ihren Spielraum gut. Das fördert Ihre Motivation und Kreativität."
+                2: {
+                    text: "Ein zu enger Rahmen kann Ihre Kreativität und Eigeninitiative unterdrücken.",
+                    impuls: "In welchem Bereich können Sie sich heute ein Stück Autonomie zurückholen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Wie nutzen Sie Ihre aktuellen Gestaltungsmöglichkeiten für neue berufliche Impulse?"
+                },
+                4: {
+                    text: "Geringer Spielraum kann das Gefühl von Ohnmacht gegenüber den Umständen fördern.",
+                    impuls: "Welchen kleinen Prozessschritt können Sie heute eigenmächtig verändern?"
+                },
+                5: {
+                    text: "Eine totale Fremdbestimmung kann Ihre psychische Widerstandskraft brechen.",
+                    impuls: "Wo müssen Sie jetzt eine klare Grenze ziehen, um handlungsfähig zu bleiben?"
                 }
             },
-            6: { // Sinn & Potenzial
-                kritisch: {
-                    text: "Wenn der Sinn Ihrer Arbeit fehlt, kann Ihre Energie trotz Pausen stetig sinken.",
-                    frage: "Welche Ihrer persönlichen Stärken kommt in Ihrem aktuellen Job zu kurz?"
+            6: { // 7. Sinn
+                1: {
+                    text: "Wenn die Arbeit als völlig sinnlos erlebt wird, kann Ihre Lebensenergie massiv sinken.",
+                    impuls: "Was muss passieren, damit Sie abends wieder mit Stolz auf Ihr Werk blicken?"
                 },
-                positiv: {
-                    text: "Sie sehen den Wert Ihrer Arbeit. Das ist der stärkste Motor für nachhaltige Energie."
+                2: {
+                    text: "Ein mangelnder Sinnbezug kann Ihre innere Motivation schleichend aushöhlen.",
+                    impuls: "Welche Ihrer persönlichen Werte finden in Ihrem aktuellen Job aktuell zu wenig Platz?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Welcher Teil Ihrer täglichen Arbeit gibt Ihnen momentan die meiste Bestätigung?"
+                },
+                4: {
+                    text: "Divergierende Werte kann einen inneren Konflikt erzeugen, der Sie viel Kraft kostet.",
+                    impuls: "Was ist der kleinste gemeinsame Nenner zwischen Ihren Werten und Ihrem Job?"
+                },
+                5: {
+                    text: "Eine völlige Sinnentleerung kann in eine schwere Motivationskrise führen.",
+                    impuls: "Was hält Sie aktuell noch in diesem Job – und was wäre die Alternative?"
                 }
             },
-            7: { // Komplexität
-                kritisch: {
-                    text: "Technische Hürden oder zu komplexe Prozesse können Ihre wertvolle Zeit unnötig binden.",
-                    frage: "Welches Tool oder welcher Prozess nervt Sie am meisten – und wie sähe eine einfache Lösung aus?"
+            7: { // 8. Technik
+                1: {
+                    text: "Veraltete oder fehlende Technik kann Ihren Frust über die Unterforderung verstärken.",
+                    impuls: "Welche modernen Tools würden Ihren Arbeitsalltag wieder spannend machen?"
                 },
-                positiv: {
-                    text: "Die Technik unterstützt Sie. Ein guter Hebel für Ihre Produktivität."
+                2: {
+                    text: "Umständliche Prozesse kann dazu führen, dass Sie Ihre Zeit mit Belanglosigkeiten füllen.",
+                    impuls: "Welcher Prozessschritt lässt sich heute durch Technik vereinfachen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Welches technische Werkzeug ist aktuell Ihr wichtigster Hebel für Effizienz?"
+                },
+                4: {
+                    text: "Technische Hürden kann wie Sand im Getriebe wirken und Ihre Zeit unnötig fressen.",
+                    impuls: "Welcher technische Stolperstein nervt Sie am meisten – und wie sähe eine Lösung aus?"
+                },
+                5: {
+                    text: "Ein technisches Chaos kann Ihre tägliche Produktivität fast vollständig blockieren.",
+                    impuls: "Welches veraltete System müssen wir sofort durch eine einfache Lösung ersetzen?"
                 }
             },
-            8: { // Soziale Einbindung
-                kritisch: {
-                    text: "Ungelöste Konflikte im Team können eine enorme psychische Belastung darstellen.",
-                    frage: "Mit welcher Person im Team sollten Sie zeitnah ein klärendes Kaffee-Gespräch führen?"
+            8: { // 9. Team
+                1: {
+                    text: "Soziale Isolation im Job kann ein starker Treiber für einen Bore-out sein.",
+                    impuls: "Mit wem im Unternehmen möchten Sie mal wieder über Visionen sprechen?"
                 },
-                positiv: {
-                    text: "Ein gutes Team fängt Stress auf. Pflegen Sie diese wichtigen sozialen Kontakte."
+                2: {
+                    text: "Ein Mangel an fachlichem Austausch kann dazu führen, dass Sie sich abgehängt fühlen.",
+                    impuls: "Welchen Kollegen können Sie heute um ein inspirierendes Feedback bitten?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Wer in Ihrem Team gibt Ihnen durch seine Art aktuell besonders viel positive Energie?"
+                },
+                4: {
+                    text: "Spannungen im Team kann Ihre psychische Energie mehr kosten als die eigentliche Arbeit.",
+                    impuls: "Welches ehrliche Gespräch würde die Luft in Ihrem Team sofort reinigen?"
+                },
+                5: {
+                    text: "Ein toxisches Umfeld kann Ihre emotionale Gesundheit nachhaltig schädigen.",
+                    impuls: "Wie können Sie sich heute räumlich oder mental vor den Konflikten schützen?"
                 }
             },
-            9: { // Arbeitstaggestaltung
-                kritisch: {
+            9: { // 10. Taggestaltung
+                1: {
+                    text: "Ein Tag ohne Struktur und Highlights kann zu bleierner Ermattung führen.",
+                    impuls: "Welches kleine Highlight können Sie heute setzen, um Ihren Rhythmus zu beleben?"
+                },
+                2: {
+                    text: "Fehlende Zäsuren bei Unterforderung kann den Tag endlos lang erscheinen lassen.",
+                    impuls: "Wie sähe ein optimaler Vormittag aus, der Sie wieder in Schwung bringt?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Wie gelingt es Ihnen aktuell am besten, Ihre Energie über den gesamten Tag zu halten?"
+                },
+                4: {
                     text: "Ein Arbeitstag ohne echte Pausen kann Raubbau an Ihren geistigen Reserven bedeuten.",
-                    frage: "Wie würde eine Mittagspause aussehen, nach der Sie sich wirklich erfrischt fühlen (statt nur am Handy zu sein)?"
+                    impuls: "Welche Art von Pause würde Ihnen heute wirklich neue Energie schenken?"
                 },
-                positiv: {
-                    text: "Ihr Rhythmus aus Arbeit und Erholung scheint gut zu funktionieren."
+                5: {
+                    text: "Eine völlig entgrenzte Arbeit kann zu einem totalen Zusammenbruch Ihrer Struktur führen.",
+                    impuls: "Welchen Termin müssen Sie heute streichen, um 30 Minuten Ruhe zu gewinnen?"
                 }
             },
-            10: { // Regeneration
-                kritisch: {
-                    text: "Wenn Sie nach Feierabend gedanklich nicht abschalten können, kann die notwendige Erholung ausbleiben.",
-                    frage: "Welches Ritual könnte Ihnen heute helfen, die Arbeit symbolisch im Büro zu lassen?"
+            10: { // 11. Regeneration
+                1: {
+                    text: "Zu viel passive Freizeit kann Ihre Fähigkeit zur echten Erholung schwächen.",
+                    impuls: "Welche aktive Tätigkeit würde Ihnen das Gefühl geben, wirklich lebendig zu sein?"
                 },
-                positiv: {
-                    text: "Sie nutzen Ihre Freizeit effektiv. Das sichert Ihre Leistungsfähigkeit für morgen."
+                2: {
+                    text: "Fehlende Herausforderungen kann dazu führen, dass Sie auch privat antriebslos werden.",
+                    impuls: "Welches Hobby oder Projekt haben Sie wegen der Job-Lethargie aufgeschoben?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Welches kleine Abend-Ritual hilft Ihnen aktuell am besten beim Loslassen des Jobs?"
+                },
+                4: {
+                    text: "Wenn die Arbeit gedanklich mit nach Hause geht, kann die notwendige Erholung ausbleiben.",
+                    impuls: "Welches physische Ritual trennt Ihren Feierabend heute klar vom Job?"
+                },
+                5: {
+                    text: "Eine chronische Unfähigkeit abzuschalten kann zu massiven Schlaf- und Ruhedefiziten führen.",
+                    impuls: "Was müssen Sie heute tun, damit Sie ab 20 Uhr garantiert nicht mehr an den Job denken?"
                 }
             },
-            11: { // Körperliche Resonanz
-                kritisch: {
-                    text: "Körperliche Symptome können ernsthafte Warnsignale für eine Überlastung sein.",
-                    frage: "Was will Ihr Körper Ihnen mit dem aktuellen Signal sagen, wenn Sie ganz ehrlich zu sich sind?"
+            11: { // 12. Körper
+                1: {
+                    text: "Körperliche Trägheit kann ein deutliches Symptom für mentale Unterforderung sein.",
+                    impuls: "Welche Bewegung würde Ihren Kreislauf und Ihren Geist heute wieder wecken?"
                 },
-                positiv: {
-                    text: "Sie fühlen sich körperlich fit. Achten Sie weiterhin auf diese Signale."
+                2: {
+                    text: "Ein Mangel an körperlicher Aktivität kann Ihre Resilienz schleichend mindern.",
+                    impuls: "Auf welches leise Signal Ihres Körpers sollten Sie in nächster Zeit öfter hören?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Was tun Sie aktuell aktiv für Ihr körperliches Wohlbefinden, das besonders gut wirkt?"
+                },
+                4: {
+                    text: "Körperliche Warnsignale kann erste Vorboten einer ernsthaften Erschöpfung sein.",
+                    impuls: "Was will Ihr Körper Ihnen sagen, wenn Sie heute ganz ehrlich zu sich sind?"
+                },
+                5: {
+                    text: "Akute körperliche Symptome kann die letzte Warnung vor einem totalen Systemausfall sein.",
+                    impuls: "Welchen Arztbesuch oder welche Ruhepause dürfen Sie nicht länger aufschieben?"
                 }
             },
-            12: { // Lebenskontext & Care-Arbeit
-                kritisch: {
-                    text: "Hohe private Belastungen können dazu führen, dass kein Raum mehr für die eigene Regeneration bleibt.",
-                    frage: "An welcher Stelle im Privaten könnten Sie um Hilfe bitten, um sich selbst eine Stunde Freiraum zu schaffen?"
+            12: { // 13. Privatleben
+                1: {
+                    text: "Wenn der Job nicht fordert, kann Ihnen oft auch die Kraft für Erfüllung im Privaten fehlen.",
+                    impuls: "Welches persönliche Projekt würde Ihnen jetzt wieder Lebensfreude schenken?"
                 },
-                positiv: {
-                    text: "Ihr Privatleben bietet Ihnen den nötigen Ausgleich zum Job."
+                2: {
+                    text: "Eine berufliche Leere kann dazu führen, dass Sie sich auch privat in Belanglosigkeiten verlieren.",
+                    impuls: "Wo im Privaten können Sie sich eine neue, spannende Herausforderung suchen?"
+                },
+                3: {
+                    text: "",
+                    impuls: "Was in Ihrem privaten Umfeld gibt Ihnen aktuell die größte Kraft für Ihren Job?"
+                },
+                4: {
+                    text: "Starke private Forderungen kann dazu führen, dass Ihre Selbstfürsorge komplett hintenansteht.",
+                    impuls: "Wo können Sie heute um Hilfe bitten, um sich 30 Minuten Zeit zu schenken?"
+                },
+                5: {
+                    text: "Eine totale Überlastung in allen Lebensbereichen kann Ihre Existenzgrundlage bedrohen.",
+                    impuls: "Was ist die eine private Verpflichtung, die Sie heute absagen müssen, um zu atmen?"
                 }
             }
         };
@@ -1840,17 +2009,12 @@ Die E-Mail enthält jetzt:
 
         // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
         function getCoachingText(dimensionIndex, wert) {
-            const texte = coachingTexte[dimensionIndex];
-            if (!texte) return null;
+            const dimension = coachingTexte[dimensionIndex];
+            if (!dimension) return null;
             
-            // Wert 4-5 = kritisch (mit Frage), sonst positiv
-            if (wert >= 4) {
-                return texte.kritisch;  // Objekt mit {text, frage}
-            } else if (wert <= 2) {
-                return texte.kritisch;  // Bei Mangel auch kritisch
-            } else {
-                return texte.positiv;   // Objekt mit {text}
-            }
+            // Gebe Objekt mit {text, impuls} für den jeweiligen Wert (1-5) zurück
+            const coaching = dimension[wert];
+            return coaching || null;
         }
 
         let currentQuestion = 0;
@@ -2302,9 +2466,9 @@ Die E-Mail enthält jetzt:
                             
                             <!-- POSITIV-TEXT (nur Coach-View) -->
                             ${coaching ? `
-                            <div class="coaching-only coaching-box positive">
-                                <div class="coaching-text">
-                                    <strong style="color: #2D5F4F;">✓ Stärke:</strong><br>
+                            <div class="coaching-impuls coaching-box positive" style="background: #F0FFF0; border-left: 4px solid #2D5F4F; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; font-size: 0.95rem;">
+                                    <strong style="color: #2D5F4F;">✓ Positiv (1-3):</strong><br>
                                     ${coaching.text}
                                 </div>
                             </div>
@@ -2334,6 +2498,9 @@ Die E-Mail enthält jetzt:
                     const hauptFrage = dim.coachingQuestions[0];
                     const weitereFragen = dim.coachingQuestions.slice(1);
                     
+                    // Hole Coaching-Impuls
+                    const coaching = getCoachingText(index, value);
+                    
                     html += `
                         <div class="dimension-card" style="border-left: 4px solid #e63946; background: linear-gradient(135deg, rgba(230, 57, 70, 0.05), white);">
                             <h3>${dim.category}</h3>
@@ -2341,6 +2508,24 @@ Die E-Mail enthält jetzt:
                             <div class="dimension-analysis">
                                 <strong>${boxText}</strong>
                             </div>
+                            
+                            ${coaching ? `
+                            <div class="coaching-impuls coaching-box" style="background: #FFF8DC; border-left: 4px solid #E85C33; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                                ${coaching.text ? `
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                    <strong style="color: #E85C33;">Wert ${value}:</strong><br>
+                                    ${coaching.text}
+                                </div>
+                                ` : ''}
+                                ${coaching.impuls ? `
+                                <div class="coaching-question" style="background: white; border-left: 3px solid #E85C33; padding: 0.8rem; border-radius: 4px; margin-top: ${coaching.text ? '0.8rem' : '0'}; font-style: italic; color: #C85A32; font-size: 0.9rem;">
+                                    <strong>Coaching-Impuls:</strong><br>
+                                    ${coaching.impuls}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
+                            
                             <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
                                 <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
                             </div>
@@ -2391,17 +2576,17 @@ Die E-Mail enthält jetzt:
                             
                             <!-- COACHING-IMPULS (nur Coach-View) -->
                             ${coaching ? `
-                            <div class="coaching-only coaching-box ${istKritisch ? '' : 'positive'}">
-                                <div class="coaching-text">
+                            <div class="coaching-impuls coaching-box ${istKritisch ? '' : 'positive'}">
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; margin-bottom: 0.5rem; font-size: 0.95rem;">
                                     <strong style="color: ${istKritisch ? '#E85C33' : '#2D5F4F'};">
-                                        ${istKritisch ? '⚠️' : '✓'} ${istKritisch ? 'Coaching-Impuls' : 'Stärke'}:
+                                        ${istKritisch ? '⚠️ Kritisch (' + (value <= 2 ? '1-2' : '4-5') + '):' : '✓ Positiv (1-3):'}
                                     </strong><br>
                                     ${coaching.text}
                                 </div>
-                                ${coaching.frage ? `
-                                <div class="coaching-question ${istKritisch ? '' : 'positive'}">
-                                    <strong>Coaching-Frage:</strong><br>
-                                    ${coaching.frage}
+                                ${coaching.impuls ? `
+                                <div class="coaching-question ${istKritisch ? '' : 'positive'}" style="background: white; border-left: 3px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; padding: 0.8rem; border-radius: 4px; margin-top: 0.8rem; font-style: italic; color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; font-size: 0.9rem;">
+                                    <strong>Coaching-Impuls:</strong><br>
+                                    ${coaching.impuls}
                                 </div>
                                 ` : ''}
                             </div>
