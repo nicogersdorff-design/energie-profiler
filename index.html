@@ -2655,6 +2655,184 @@ Die E-Mail enthält jetzt:
                 function renderDimensionsDetails() {
             const container = document.getElementById('dimensionsDetails');
             
+            // Gruppiere Dimensionen nach Priorität
+            const staerkeAnker = [];
+            const leichteAbweichungen = [];
+            const kritischeFelder = [];
+            
+            dimensions.forEach((dim, index) => {
+                const value = answers[index];
+                
+                // Sicherheitscheck
+                if (value === undefined || value === null || !value) {
+                    console.warn(`⚠️ Dimension ${index} (${dim.category}) hat keinen Wert - setze auf 3`);
+                    answers[index] = 3;
+                }
+                
+                const actualValue = answers[index];
+                const boxText = dim.boxes[actualValue - 1];
+                const data = { dim, index, value: actualValue, boxText };
+                
+                if (actualValue === 3) {
+                    staerkeAnker.push(data);
+                } else if (actualValue === 2 || actualValue === 4) {
+                    leichteAbweichungen.push(data);
+                } else {
+                    kritischeFelder.push(data);
+                }
+            });
+            
+            let html = '<h2 style="font-family: \'Montserrat\', sans-serif; font-size: 2rem; text-align: center; margin-bottom: 48px; color: var(--text-dark);">Ihre Ergebnisse nach Priorität</h2>';
+            
+            // PSYCHOLOGISCHE SORTIERUNG: 1. GRÜN (Kraftquellen)
+            if (staerkeAnker.length > 0) {
+                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #40916C; margin-bottom: 16px; border-left: 4px solid #40916C; padding-left: 16px;">✓ Ihre Kraftquellen</h3>';
+                html += '<div class="dimensions-grid">';
+                staerkeAnker.forEach(({ dim, boxText, index, value }) => {
+                    const coaching = getCoachingText(index, value);
+                    
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #40916C;">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #40916C, #2D6A4F);">Stabilitäts-Anker</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                            
+                            ${coaching ? `
+                            <div class="coaching-impuls coaching-box positive" style="background: #F0FFF0; border-left: 4px solid #2D5F4F; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; font-size: 0.95rem;">
+                                    <strong style="color: #2D5F4F;">✓ Positiv (1-3):</strong><br>
+                                    ${coaching.text ? coaching.text : ''}
+                                </div>
+                                ${coaching.impuls ? `
+                                <div class="coaching-question positive" style="background: white; border-left: 3px solid #2D5F4F; padding: 0.8rem; border-radius: 4px; margin-top: 0.8rem; font-style: italic; color: #2D5F4F; font-size: 0.9rem;">
+                                    <strong>Coaching-Impuls:</strong><br>
+                                    ${coaching.impuls}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            // 2. ROT (Handlungsfelder)
+            if (kritischeFelder.length > 0) {
+                html += '<div class="handlungsfelder-section" style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #e63946; margin-bottom: 16px; border-left: 4px solid #e63946; padding-left: 16px;">🔴 Ihre Handlungsfelder</h3>';
+                html += '<div class="dimensions-grid">';
+                kritischeFelder.forEach(({ dim, value, boxText, index }) => {
+                    const coaching = getCoachingText(index, value);
+                    const hauptFrage = dim.coachingQuestions[0];
+                    const weitereFragen = dim.coachingQuestions.slice(1);
+                    
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #e63946; background: linear-gradient(135deg, rgba(230, 57, 70, 0.05), white);">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #e63946, #c85a54);">Handlungsfeld</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                            
+                            ${coaching ? `
+                            <div class="coaching-impuls coaching-box" style="background: #FFF8DC; border-left: 4px solid #E85C33; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                                ${coaching.text ? `
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                    <strong style="color: #E85C33;">Wert ${value}:</strong><br>
+                                    ${coaching.text}
+                                </div>
+                                ` : ''}
+                                ${coaching.impuls ? `
+                                <div class="coaching-question" style="background: white; border-left: 3px solid #E85C33; padding: 0.8rem; border-radius: 4px; margin-top: ${coaching.text ? '0.8rem' : '0'}; font-style: italic; color: #C85A32; font-size: 0.9rem;">
+                                    <strong>Coaching-Impuls:</strong><br>
+                                    ${coaching.impuls}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
+                            
+                            <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                                <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
+                            </div>
+                            <div class="coaching-questions" style="display: none;">
+                                <h4>Reflexions-Impuls</h4>
+                                <p style="font-weight: 600; color: #f4a261; margin-bottom: 12px;">→ ${hauptFrage}</p>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px;">Mehr strategische Impulse anzeigen</summary>
+                                    <ul style="margin-top: 12px;">
+                                        ${weitereFragen.map(q => `<li>${q}</li>`).join('')}
+                                        <li><em>Welche äußeren Strukturen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</em></li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            // 3. GELB (Optimierungsfelder)
+            if (leichteAbweichungen.length > 0) {
+                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #f4a261; margin-bottom: 16px; border-left: 4px solid #f4a261; padding-left: 16px;">⚠️ Ihre Optimierungsfelder</h3>';
+                html += '<div class="dimensions-grid">';
+                leichteAbweichungen.forEach(({ dim, value, boxText, index }) => {
+                    const coaching = getCoachingText(index, value);
+                    const hauptFrage = dim.coachingQuestions[0];
+                    const weitereFragen = dim.coachingQuestions.slice(1);
+                    
+                    html += `
+                        <div class="dimension-card" style="border-left: 4px solid #f4a261;">
+                            <h3>${dim.category}</h3>
+                            <div class="dimension-value" style="background: linear-gradient(135deg, #f4a261, #e8a43f);">Optimierungsfeld</div>
+                            <div class="dimension-analysis">
+                                <strong>${boxText}</strong>
+                            </div>
+                            
+                            ${coaching ? `
+                            <div class="coaching-impuls coaching-box" style="background: #FFF8DC; border-left: 4px solid #f4a261; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                                ${coaching.text ? `
+                                <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; margin-bottom: 0.5rem; font-size: 0.95rem;">
+                                    <strong style="color: #f4a261;">Wert ${value}:</strong><br>
+                                    ${coaching.text}
+                                </div>
+                                ` : ''}
+                                ${coaching.impuls ? `
+                                <div class="coaching-question" style="background: white; border-left: 3px solid #f4a261; padding: 0.8rem; border-radius: 4px; margin-top: ${coaching.text ? '0.8rem' : '0'}; font-style: italic; color: #C85A32; font-size: 0.9rem;">
+                                    <strong>Coaching-Impuls:</strong><br>
+                                    ${coaching.impuls}
+                                </div>
+                                ` : ''}
+                            </div>
+                            ` : ''}
+                            
+                            <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
+                                <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
+                            </div>
+                            <div class="coaching-questions" style="display: none;">
+                                <h4>Reflexions-Impuls</h4>
+                                <p style="font-weight: 600; color: #f4a261; margin-bottom: 12px;">→ ${hauptFrage}</p>
+                                <details style="margin-top: 12px;">
+                                    <summary style="cursor: pointer; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px;">Mehr strategische Impulse anzeigen</summary>
+                                    <ul style="margin-top: 12px;">
+                                        ${weitereFragen.map(q => `<li>${q}</li>`).join('')}
+                                        <li><em>Welche äußeren Strukturen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</em></li>
+                                    </ul>
+                                </details>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function renderPDFDetails() {
+            const container = document.getElementById('dimensionsDetails');
+            
             // Sammle Dimensionen nach Kategorie
             const stableAnchors = [];  // Wert 3
             const actionFields = [];   // Werte 1, 2, 4, 5
@@ -2781,10 +2959,10 @@ Die E-Mail enthält jetzt:
         }
 
 
+
         async function generatePDF() {
-            console.log('📄 Starte PDF-Export mit html2pdf.js...');
+            console.log('📄 Starte PDF-Export...');
             
-            // Hole den gesamten Results-Container
             const element = document.querySelector('.results-container');
             if (!element) {
                 console.error('❌ Results-Container nicht gefunden');
@@ -2799,11 +2977,18 @@ Die E-Mail enthält jetzt:
                 pdfButton.disabled = true;
             }
             
-            // Temporär: Buttons ausblenden für PDF
+            // WICHTIG: Ersetze die Web-Details temporär mit PDF-Details
+            const detailsContainer = document.getElementById('dimensionsDetails');
+            const originalHTML = detailsContainer.innerHTML;
+            
+            // Rendere PDF-Version
+            renderPDFDetails();
+            
+            // Temporär: Buttons ausblenden
             const buttons = element.querySelectorAll('button');
             buttons.forEach(btn => btn.style.display = 'none');
             
-            // Aktiviere temporär Coach-View für PDF (damit Coaching-Impulse sichtbar sind)
+            // Aktiviere Coach-View für PDF (Coaching-Impulse sichtbar)
             const wasCoachView = document.body.classList.contains('is-coach-view');
             if (!wasCoachView) {
                 document.body.classList.add('is-coach-view');
@@ -2849,15 +3034,19 @@ Die E-Mail enthält jetzt:
                     pdfButton.disabled = false;
                 }
             } finally {
+                // WICHTIG: Stelle Web-Ansicht wieder her
+                detailsContainer.innerHTML = originalHTML;
+                
                 // Buttons wieder einblenden
                 buttons.forEach(btn => btn.style.display = '');
                 
-                // Coach-View zurücksetzen wenn es vorher nicht aktiv war
+                // Coach-View zurücksetzen
                 if (!wasCoachView) {
                     document.body.classList.remove('is-coach-view');
                 }
             }
         }
+
 
         function getColorForPercentageRGB(percentage) {
             if (percentage <= 15) {
