@@ -2003,11 +2003,6 @@ Die E-Mail enthält jetzt:
             }
         };
 
-        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert        };
-
-        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
-        function getCoachingText(dimensionIndex, wert) {        };
-
         // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
         function getCoachingText(dimensionIndex, wert) {
             const dimension = coachingTexte[dimensionIndex];
@@ -2067,6 +2062,7 @@ Die E-Mail enthält jetzt:
         }
 
         function selectOption(questionIndex, value) {
+            console.log(`✅ Antwort gespeichert: Dimension ${questionIndex} (${dimensions[questionIndex]?.category}) = ${value}`);
             answers[questionIndex] = value;
             renderQuestion(currentQuestion);
             
@@ -2169,6 +2165,16 @@ Die E-Mail enthält jetzt:
 
 
         function showResults() {
+            console.log('📊 Zeige Ergebnisse - Alle Antworten:', answers);
+            console.log('📊 Anzahl beantworteter Fragen:', Object.keys(answers).length);
+            
+            // Prüfe ob alle Fragen beantwortet sind
+            dimensions.forEach((dim, index) => {
+                if (answers[index] === undefined) {
+                    console.warn(`⚠️ Dimension ${index} (${dim.category}) nicht beantwortet!`);
+                }
+            });
+            
             document.getElementById('questionnaire').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'block';
             
@@ -2436,11 +2442,20 @@ Die E-Mail enthält jetzt:
             
             dimensions.forEach((dim, index) => {
                 const value = answers[index];
-                const data = { dim, index, value, boxText: dim.boxes[value - 1] };
                 
-                if (value === 3) {
+                // Sicherheitscheck: Falls value undefined ist, setze auf 3
+                if (value === undefined || value === null || !value) {
+                    console.warn(`⚠️ Dimension ${index} (${dim.category}) hat keinen Wert - setze auf 3`);
+                    answers[index] = 3;
+                }
+                
+                const actualValue = answers[index];
+                const boxText = dim.boxes[actualValue - 1];
+                const data = { dim, index, value: actualValue, boxText };
+                
+                if (actualValue === 3) {
                     staerkeAnker.push(data);
-                } else if (value === 2 || value === 4) {
+                } else if (actualValue === 2 || actualValue === 4) {
                     leichteAbweichungen.push(data);
                 } else {
                     kritischeFelder.push(data);
