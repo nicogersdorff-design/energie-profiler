@@ -899,236 +899,16 @@ Die E-Mail enthält jetzt:
             box-shadow: 0 8px 24px rgba(232, 92, 51, 0.5);
         }
 
-        
-        /* ============================================================
-           PDF-OPTIMIERTES DESIGN (2-3 Seiten)
-           ============================================================ */
-        
         @media print {
             body {
-                margin: 0;
-                padding: 0;
-                font-family: 'Inter', -apple-system, sans-serif;
-                color: #4A5D7C;
-                font-size: 10pt;
-                line-height: 1.4;
-            }
-            
-            .pdf-page {
-                page-break-after: always;
-                padding: 15mm;
-            }
-            
-            .no-break {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-            
-            /* PDF Header - Kompakt */
-            .pdf-header {
-                background: linear-gradient(135deg, #E85C33 0%, #D64A23 100%);
-                color: white;
-                padding: 12mm 0;
-                margin: -15mm -15mm 8mm -15mm;
-                text-align: center;
-            }
-            
-            .pdf-header h1 {
-                margin: 0;
-                font-size: 22pt;
-                font-weight: 700;
-                letter-spacing: -0.5px;
-            }
-            
-            .pdf-header .subtitle {
-                margin: 4px 0 0 0;
-                font-size: 11pt;
-                opacity: 0.95;
-                font-weight: 400;
-            }
-            
-            /* Executive Summary Box */
-            .executive-summary {
-                background: #F8F9FB;
-                border-left: 4px solid #E85C33;
-                padding: 10mm;
-                margin-bottom: 8mm;
-                page-break-inside: avoid;
-            }
-            
-            .executive-summary h2 {
-                margin: 0 0 6mm 0;
-                font-size: 14pt;
-                color: #4A5D7C;
-                font-weight: 600;
-            }
-            
-            .executive-summary p {
-                margin: 0;
-                font-size: 11pt;
-                line-height: 1.6;
-                color: #4A5D7C;
-            }
-            
-            /* Stabilitäts-Anker - Kompakt 3-Spalten Grid */
-            .stability-section {
-                page-break-inside: avoid;
-                margin-bottom: 8mm;
-            }
-            
-            .stability-section h2 {
-                font-size: 13pt;
-                color: #99ccaa;
-                margin: 0 0 4mm 0;
-                font-weight: 600;
-                border-bottom: 2px solid #99ccaa;
-                padding-bottom: 2mm;
-            }
-            
-            .stability-grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 3mm;
-                margin-top: 3mm;
-            }
-            
-            .stability-item {
-                background: #F0F8F4;
-                padding: 3mm;
-                border-radius: 3px;
-                font-size: 10pt;
-                color: #2D5F4F;
-                font-weight: 500;
-            }
-            
-            /* Handlungsfelder - Analytische Karten */
-            .action-section {
-                page-break-inside: avoid;
-                margin-bottom: 8mm;
-            }
-            
-            .action-section h2 {
-                font-size: 13pt;
-                color: #E85C33;
-                margin: 0 0 4mm 0;
-                font-weight: 600;
-                border-bottom: 2px solid #E85C33;
-                padding-bottom: 2mm;
-            }
-            
-            .action-card {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #F8F9FA 0%, #E8EAF0 100%);
                 background: white;
-                border: 1px solid #E0E4E8;
-                border-left: 4px solid #E85C33;
-                padding: 5mm;
-                margin-bottom: 4mm;
-                page-break-inside: avoid;
             }
-            
-            .action-card.warning {
-                border-left-color: #F4A261;
-            }
-            
-            .action-card-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 3mm;
-            }
-            
-            .action-card-title {
-                font-size: 12pt;
-                font-weight: 600;
-                color: #4A5D7C;
-            }
-            
-            .action-card-label {
-                font-size: 9pt;
-                padding: 2mm 4mm;
-                border-radius: 3px;
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-            }
-            
-            .action-card-label.critical {
-                background: #FFE8E0;
-                color: #E85C33;
-            }
-            
-            .action-card-label.deviation {
-                background: #FFF4E6;
-                color: #F4A261;
-            }
-            
-            .action-card-analysis {
-                font-size: 10pt;
-                line-height: 1.5;
-                color: #4A5D7C;
-                margin-bottom: 3mm;
-            }
-            
-            .action-card-insights {
-                background: #F8F9FB;
-                padding: 3mm;
-                border-radius: 3px;
-                font-size: 9pt;
-            }
-            
-            .action-card-insights .insight-item {
-                margin-bottom: 2mm;
-            }
-            
-            .action-card-insights .insight-item:last-child {
-                margin-bottom: 0;
-            }
-            
-            .action-card-insights strong {
-                color: #4A5D7C;
-                font-weight: 600;
-            }
-            
-            /* Radar Chart - Kompakt */
-            .pdf-chart-container {
-                text-align: center;
-                margin: 6mm 0;
-                page-break-inside: avoid;
-            }
-            
-            .pdf-chart-container h2 {
-                font-size: 13pt;
-                color: #4A5D7C;
-                margin: 0 0 4mm 0;
-                font-weight: 600;
-            }
-            
-            .pdf-chart-container canvas {
-                max-height: 300px !important;
-                width: auto !important;
-                margin: 0 auto;
-            }
-            
-            /* Utility Classes */
-            .text-center {
-                text-align: center;
-            }
-            
-            .mt-4 {
-                margin-top: 4mm;
-            }
-            
-            .mb-4 {
-                margin-bottom: 4mm;
-            }
-            
-            /* Hide web elements in PDF */
-            button, .btn, .nav-buttons, .coaching-teaser, 
-            .coaching-questions, .radar-legend {
-                display: none !important;
+            .export-button {
+                display: none;
             }
         }
-
-
 
         /* Email Modal Styles */
         .modal-overlay {
@@ -2015,7 +1795,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Inwiefern hilft Ihnen Ihre aktuelle Klarheit, auch in hektischen Zeiten ruhig zu bleiben?"
                 },
                 4: {
-                    text: "Unklare Ziele können wie ein Kraft raubender Nebel wirken.",
+                    text: "Unklare Ziele kann wie ein Kraft raubender Nebel wirken.",
                     impuls: "Wenn Sie heute nur ein einziges Ziel erreichen dürften, welches wäre das?"
                 },
                 5: {
@@ -2103,7 +1883,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Welches technische Werkzeug ist aktuell Ihr wichtigster Hebel für Effizienz?"
                 },
                 4: {
-                    text: "Technische Hürden können Ihre Zeit unnötig fressen.",
+                    text: "Technische Hürden kann Ihre Zeit unnötig fressen.",
                     impuls: "Welcher technische Stolperstein nervt Sie am meisten?"
                 },
                 5: {
@@ -2125,7 +1905,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Wer in Ihrem Team gibt Ihnen durch seine Art aktuell besonders viel positive Energie?"
                 },
                 4: {
-                    text: "Spannungen im Team können Ihre Energie mehr kosten als die Arbeit.",
+                    text: "Spannungen im Team kann Ihre Energie mehr kosten als die Arbeit.",
                     impuls: "Welches ehrliche Gespräch würde die Luft in Ihrem Team sofort reinigen?"
                 },
                 5: {
@@ -2139,7 +1919,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Welches kleine Highlight können Sie heute setzen, um Ihren Rhythmus zu beleben?"
                 },
                 2: {
-                    text: "Fehlende Zäsuren bei Unterforderung können den Tag endlos lang erscheinen lassen.",
+                    text: "Fehlende Zäsuren bei Unterforderung kann den Tag endlos lang erscheinen lassen.",
                     impuls: "Wie sähe ein optimaler Vormittag aus, der Sie wieder in Schwung bringt?"
                 },
                 3: {
@@ -2161,7 +1941,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Welche aktive Tätigkeit würde Ihnen das Gefühl geben, wirklich lebendig zu sein?"
                 },
                 2: {
-                    text: "Fehlende Herausforderungen können dazu führen, dass Sie auch privat antriebslos werden.",
+                    text: "Fehlende Herausforderungen kann dazu führen, dass Sie auch privat antriebslos werden.",
                     impuls: "Welches Hobby haben Sie wegen der Job-Lethargie aufgeschoben?"
                 },
                 3: {
@@ -2191,7 +1971,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Was tun Sie aktuell aktiv für Ihr körperliches Wohlbefinden, das besonders gut wirkt?"
                 },
                 4: {
-                    text: "Körperliche Warnsignale können erste Vorboten einer ernsthaften Erschöpfung sein.",
+                    text: "Körperliche Warnsignale kann erste Vorboten einer ernsthaften Erschöpfung sein.",
                     impuls: "Was will Ihr Körper Ihnen sagen, wenn Sie heute ganz ehrlich zu sich sind?"
                 },
                 5: {
@@ -2213,7 +1993,7 @@ Die E-Mail enthält jetzt:
                     impuls: "Was in Ihrem privaten Umfeld gibt Ihnen aktuell die größte Kraft für Ihren Job?"
                 },
                 4: {
-                    text: "Starke private Forderungen können dazu führen, dass Ihre Selbstfürsorge hintenansteht.",
+                    text: "Starke private Forderungen kann dazu führen, dass Ihre Selbstfürsorge hintenansteht.",
                     impuls: "Wo könnten Sie heute um Hilfe bitten, um sich 30 Minuten Zeit zu schenken?"
                 },
                 5: {
@@ -2222,6 +2002,11 @@ Die E-Mail enthält jetzt:
                 }
             }
         };
+
+        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert        };
+
+        // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
+        function getCoachingText(dimensionIndex, wert) {        };
 
         // Hilfsfunktion: Hole passenden Coaching-Text basierend auf Wert
         function getCoachingText(dimensionIndex, wert) {
@@ -2282,7 +2067,6 @@ Die E-Mail enthält jetzt:
         }
 
         function selectOption(questionIndex, value) {
-            console.log(`✅ Antwort gespeichert: Dimension ${questionIndex} (${dimensions[questionIndex]?.category}) = ${value}`);
             answers[questionIndex] = value;
             renderQuestion(currentQuestion);
             
@@ -2385,16 +2169,6 @@ Die E-Mail enthält jetzt:
 
 
         function showResults() {
-            console.log('📊 Zeige Ergebnisse - Alle Antworten:', answers);
-            console.log('📊 Anzahl beantworteter Fragen:', Object.keys(answers).length);
-            
-            // Prüfe ob alle Fragen beantwortet sind
-            dimensions.forEach((dim, index) => {
-                if (answers[index] === undefined) {
-                    console.warn(`⚠️ Dimension ${index} (${dim.category}) nicht beantwortet!`);
-                }
-            });
-            
             document.getElementById('questionnaire').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'block';
             
@@ -2452,52 +2226,51 @@ Die E-Mail enthält jetzt:
         }
 
         function renderRadarChart() {
-            const canvas = document.getElementById('radarChart');
-            const ctx = canvas.getContext('2d');
+            const ctx = document.getElementById('radarChart').getContext('2d');
             
-            // Set canvas size for PDF
-            canvas.width = 600;
-            canvas.height = 600;
+            // Funktion für Punkt-Farben: Ampel-Logik
+            const getPointColor = (value) => {
+                if (value === 3) return '#40916C'; // Grün für Balance
+                if (value === 2 || value === 4) return '#f4a261'; // Gelb/Orange für leichte Abweichung
+                return '#e63946'; // Rot für kritische Abweichung
+            };
             
-            if (window.radarChart) {
-                window.radarChart.destroy();
-            }
+            const pointColors = dimensions.map((_, i) => getPointColor(answers[i]));
             
-            const labels = dimensions.map(d => d.category);
-            const data = dimensions.map((_, i) => answers[i]);
-            const targetData = new Array(13).fill(3);  // Ziel-Netz bei 3
-            
-            window.radarChart = new Chart(ctx, {
+            const data = {
+                labels: dimensions.map(d => d.category),
+                datasets: [
+                    {
+                        label: 'Ihre Werte',
+                        data: dimensions.map((_, i) => answers[i]),
+                        backgroundColor: 'rgba(156, 163, 175, 0.05)',
+                        borderColor: 'rgba(156, 163, 175, 0.4)',
+                        borderWidth: 2,
+                        borderDash: [5, 3],
+                        pointBackgroundColor: pointColors,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 7,
+                        pointHoverRadius: 9,
+                        pointHoverBackgroundColor: pointColors,
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    },
+                    {
+                        label: 'Balance-Ring (Zielwert 3)',
+                        data: dimensions.map(() => 3),
+                        backgroundColor: 'rgba(64, 145, 108, 0)',
+                        borderColor: 'rgba(64, 145, 108, 0.8)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        pointHoverRadius: 0
+                    }
+                ]
+            };
+
+            new Chart(ctx, {
                 type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Ziel-Zone (3)',
-                            data: targetData,
-                            backgroundColor: 'rgba(153, 204, 170, 0.15)',  // Mint transparent
-                            borderColor: '#99ccaa',  // Mint
-                            borderWidth: 2,
-                            pointBackgroundColor: '#99ccaa',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 1,
-                            pointRadius: 3,
-                            pointHoverRadius: 4
-                        },
-                        {
-                            label: 'Ihr Profil',
-                            data: data,
-                            backgroundColor: 'rgba(232, 92, 51, 0.2)',  // Orange transparent
-                            borderColor: '#E85C33',  // Orange
-                            borderWidth: 3,
-                            pointBackgroundColor: '#E85C33',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }
-                    ]
-                },
+                data: data,
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
@@ -2507,16 +2280,24 @@ Die E-Mail enthält jetzt:
                             max: 5,
                             ticks: {
                                 stepSize: 1,
-                                backdropColor: 'transparent',
-                                color: '#4A5D7C',
-                                font: { size: 11 }
-                            },
-                            grid: {
-                                color: 'rgba(74, 93, 124, 0.1)'
+                                font: {
+                                    size: 11,
+                                    family: "'Open Sans', sans-serif"
+                                }
                             },
                             pointLabels: {
-                                color: '#4A5D7C',
-                                font: { size: 10, weight: '500' }
+                                font: {
+                                    size: 12,
+                                    family: "'Open Sans', sans-serif",
+                                    weight: '600'
+                                },
+                                color: '#2a2a2a'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
                             }
                         }
                     },
@@ -2525,24 +2306,17 @@ Die E-Mail enthält jetzt:
                             display: true,
                             position: 'bottom',
                             labels: {
-                                color: '#4A5D7C',
-                                font: { size: 11 },
-                                padding: 10,
-                                usePointStyle: true
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.r;
-                                }
+                                font: {
+                                    size: 13,
+                                    family: "'Open Sans', sans-serif"
+                                },
+                                padding: 20
                             }
                         }
                     }
                 }
             });
         }
-
 
         function renderRiskAnalysis() {
             const container = document.getElementById('riskAnalysis');
@@ -2652,7 +2426,7 @@ Die E-Mail enthält jetzt:
 
 
 
-                function renderDimensionsDetails() {
+        function renderDimensionsDetails() {
             const container = document.getElementById('dimensionsDetails');
             
             // Gruppiere Dimensionen nach Priorität
@@ -2662,20 +2436,11 @@ Die E-Mail enthält jetzt:
             
             dimensions.forEach((dim, index) => {
                 const value = answers[index];
+                const data = { dim, index, value, boxText: dim.boxes[value - 1] };
                 
-                // Sicherheitscheck
-                if (value === undefined || value === null || !value) {
-                    console.warn(`⚠️ Dimension ${index} (${dim.category}) hat keinen Wert - setze auf 3`);
-                    answers[index] = 3;
-                }
-                
-                const actualValue = answers[index];
-                const boxText = dim.boxes[actualValue - 1];
-                const data = { dim, index, value: actualValue, boxText };
-                
-                if (actualValue === 3) {
+                if (value === 3) {
                     staerkeAnker.push(data);
-                } else if (actualValue === 2 || actualValue === 4) {
+                } else if (value === 2 || value === 4) {
                     leichteAbweichungen.push(data);
                 } else {
                     kritischeFelder.push(data);
@@ -2689,6 +2454,7 @@ Die E-Mail enthält jetzt:
                 html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #40916C; margin-bottom: 16px; border-left: 4px solid #40916C; padding-left: 16px;">✓ Ihre Kraftquellen</h3>';
                 html += '<div class="dimensions-grid">';
                 staerkeAnker.forEach(({ dim, boxText, index, value }) => {
+                    // Hole Coaching-Impuls (Positiv-Text bei Wert 3)
                     const coaching = getCoachingText(index, value);
                     
                     html += `
@@ -2699,18 +2465,13 @@ Die E-Mail enthält jetzt:
                                 <strong>${boxText}</strong>
                             </div>
                             
+                            <!-- POSITIV-TEXT (nur Coach-View) -->
                             ${coaching ? `
                             <div class="coaching-impuls coaching-box positive" style="background: #F0FFF0; border-left: 4px solid #2D5F4F; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
                                 <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; font-size: 0.95rem;">
                                     <strong style="color: #2D5F4F;">✓ Positiv (1-3):</strong><br>
-                                    ${coaching.text ? coaching.text : ''}
+                                    ${coaching.text}
                                 </div>
-                                ${coaching.impuls ? `
-                                <div class="coaching-question positive" style="background: white; border-left: 3px solid #2D5F4F; padding: 0.8rem; border-radius: 4px; margin-top: 0.8rem; font-style: italic; color: #2D5F4F; font-size: 0.9rem;">
-                                    <strong>Coaching-Impuls:</strong><br>
-                                    ${coaching.impuls}
-                                </div>
-                                ` : ''}
                             </div>
                             ` : ''}
                         </div>
@@ -2719,14 +2480,27 @@ Die E-Mail enthält jetzt:
                 html += '</div></div>';
             }
             
-            // 2. ROT (Handlungsfelder)
+            // 2. ROT (Handlungsfelder) - KOMMT VOR GELB!
             if (kritischeFelder.length > 0) {
                 html += '<div class="handlungsfelder-section" style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #e63946; margin-bottom: 16px; border-left: 4px solid #e63946; padding-left: 16px;">🔴 Ihre Handlungsfelder</h3>';
                 html += '<div class="dimensions-grid">';
                 kritischeFelder.forEach(({ dim, value, boxText, index }) => {
-                    const coaching = getCoachingText(index, value);
+                    const isMangel = value <= 2;
+                    const polaritaet = isMangel ? 'Mangel/Unterforderung' : 'Übermaß/Überforderung';
+                    const direction = isMangel ? 'starker Mangel (Bore-out-Gefahr)' : 'starkes Übermaß (Burn-out-Gefahr)';
+                    
+                    // Spezielle Tipps für bestimmte Dimensionen
+                    let spezialTipp = '';
+                    if (dim.category.includes('Arbeitslast') || dim.category.includes('Arbeitsfluss') || dim.category.includes('Prioritäten')) {
+                        spezialTipp = '<li><strong>Systemischer Tipp:</strong> Suchen Sie zeitnah das Gespräch mit Ihrer Führungskraft. Klären Sie Prioritäten (\'Moving Targets\') und fordern Sie Unterstützung bei der Strukturierung ein.</li>';
+                    }
+                    
+                    // Erste Coaching-Frage
                     const hauptFrage = dim.coachingQuestions[0];
                     const weitereFragen = dim.coachingQuestions.slice(1);
+                    
+                    // Hole Coaching-Impuls
+                    const coaching = getCoachingText(index, value);
                     
                     html += `
                         <div class="dimension-card" style="border-left: 4px solid #e63946; background: linear-gradient(135deg, rgba(230, 57, 70, 0.05), white);">
@@ -2758,12 +2532,15 @@ Die E-Mail enthält jetzt:
                             </div>
                             <div class="coaching-questions" style="display: none;">
                                 <h4>Reflexions-Impuls</h4>
-                                <p style="font-weight: 600; color: #f4a261; margin-bottom: 12px;">→ ${hauptFrage}</p>
+                                <p style="font-weight: 600; color: #e63946; margin-bottom: 12px;">→ ${hauptFrage}</p>
                                 <details style="margin-top: 12px;">
                                     <summary style="cursor: pointer; color: var(--primary-blue); font-weight: 600; margin-bottom: 8px;">Mehr strategische Impulse anzeigen</summary>
                                     <ul style="margin-top: 12px;">
                                         ${weitereFragen.map(q => `<li>${q}</li>`).join('')}
-                                        <li><em>Welche äußeren Strukturen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</em></li>
+                                        ${spezialTipp}
+                                        <li><strong style="color: #e63946;">Sofort-Hilfe: Radikaler Minimalismus</strong> – Welche 3 Aufgaben/Verpflichtungen könnten Sie HEUTE streichen oder delegieren?</li>
+                                        <li><strong style="color: #e63946;">Klärungsgespräch mit der Leitung:</strong> Welche Rahmenbedingungen müssten sich ändern, damit dieser Bereich wieder in die Balance kommt?</li>
+                                        <li><strong style="color: #e63946;">Wer könnte Sie bei der Stabilisierung unterstützen?</strong> (Team, Coach, HR, Familie)</li>
                                     </ul>
                                 </details>
                             </div>
@@ -2773,12 +2550,20 @@ Die E-Mail enthält jetzt:
                 html += '</div></div>';
             }
             
-            // 3. GELB (Optimierungsfelder)
+            // 3. GELB (Optimierungs-Potenziale) - KOMMT NACH ROT!
             if (leichteAbweichungen.length > 0) {
-                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #f4a261; margin-bottom: 16px; border-left: 4px solid #f4a261; padding-left: 16px;">⚠️ Ihre Optimierungsfelder</h3>';
+                html += '<div style="margin-bottom: 48px;"><h3 style="font-family: \'Montserrat\', sans-serif; font-size: 1.5rem; color: #f4a261; margin-bottom: 16px; border-left: 4px solid #f4a261; padding-left: 16px;">⚠️ Optimierungsfelder</h3>';
                 html += '<div class="dimensions-grid">';
                 leichteAbweichungen.forEach(({ dim, value, boxText, index }) => {
+                    const isMangel = value === 2;
+                    const direction = isMangel ? 'Mangel' : 'Übermaß';
+                    const polaritaet = isMangel ? 'Mangel/Unterforderung' : 'Übermaß/Überforderung';
+                    
+                    // Hole Coaching-Impuls
                     const coaching = getCoachingText(index, value);
+                    const istKritisch = value >= 4 || value <= 2;
+                    
+                    // Erste Coaching-Frage
                     const hauptFrage = dim.coachingQuestions[0];
                     const weitereFragen = dim.coachingQuestions.slice(1);
                     
@@ -2790,23 +2575,23 @@ Die E-Mail enthält jetzt:
                                 <strong>${boxText}</strong>
                             </div>
                             
+                            <!-- COACHING-IMPULS (nur Coach-View) -->
                             ${coaching ? `
-                            <div class="coaching-impuls coaching-box" style="background: #FFF8DC; border-left: 4px solid #f4a261; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
-                                ${coaching.text ? `
+                            <div class="coaching-impuls coaching-box ${istKritisch ? '' : 'positive'}">
                                 <div class="coaching-text" style="color: #3C3C3C; line-height: 1.6; margin-bottom: 0.5rem; font-size: 0.95rem;">
-                                    <strong style="color: #f4a261;">Wert ${value}:</strong><br>
+                                    <strong style="color: ${istKritisch ? '#E85C33' : '#2D5F4F'};">
+                                        ${istKritisch ? '⚠️ Kritisch (' + (value <= 2 ? '1-2' : '4-5') + '):' : '✓ Positiv (1-3):'}
+                                    </strong><br>
                                     ${coaching.text}
                                 </div>
-                                ` : ''}
                                 ${coaching.impuls ? `
-                                <div class="coaching-question" style="background: white; border-left: 3px solid #f4a261; padding: 0.8rem; border-radius: 4px; margin-top: ${coaching.text ? '0.8rem' : '0'}; font-style: italic; color: #C85A32; font-size: 0.9rem;">
+                                <div class="coaching-question ${istKritisch ? '' : 'positive'}" style="background: white; border-left: 3px solid ${istKritisch ? '#E85C33' : '#2D5F4F'}; padding: 0.8rem; border-radius: 4px; margin-top: 0.8rem; font-style: italic; color: ${istKritisch ? '#C85A32' : '#2D5F4F'}; font-size: 0.9rem;">
                                     <strong>Coaching-Impuls:</strong><br>
                                     ${coaching.impuls}
                                 </div>
                                 ` : ''}
                             </div>
                             ` : ''}
-                            
                             <div class="coaching-teaser" style="background: #f8f9fa; border-left: 3px solid #6c757d; padding: 12px; margin-top: 12px; border-radius: 4px;">
                                 <p style="color: #495057; margin: 0; font-size: 0.9rem;">📋 Detaillierte Coaching-Impulse exklusiv in Ihrem PDF-Bericht.</p>
                             </div>
@@ -2830,139 +2615,10 @@ Die E-Mail enthält jetzt:
             container.innerHTML = html;
         }
 
-        function renderPDFDetails() {
-            const container = document.getElementById('dimensionsDetails');
-            
-            // Sammle Dimensionen nach Kategorie
-            const stableAnchors = [];  // Wert 3
-            const actionFields = [];   // Werte 1, 2, 4, 5
-            
-            dimensions.forEach((dim, index) => {
-                const value = answers[index];
-                
-                // Sicherheitscheck
-                if (value === undefined || value === null || !value) {
-                    console.warn(`⚠️ Dimension ${index} (${dim.category}) hat keinen Wert - setze auf 3`);
-                    answers[index] = 3;
-                }
-                
-                const actualValue = answers[index];
-                
-                if (actualValue === 3) {
-                    stableAnchors.push({ dim, index, value: actualValue });
-                } else {
-                    // Hole Coaching-Text
-                    const coaching = getCoachingText(index, actualValue);
-                    const reflexionImpuls = dim.coachingQuestions[0];
-                    
-                    actionFields.push({
-                        dim,
-                        index,
-                        value: actualValue,
-                        coaching,
-                        reflexion: reflexionImpuls,
-                        boxText: dim.boxes[actualValue - 1]
-                    });
-                }
-            });
-            
-            // Prüfe ob kritische Werte vorhanden sind
-            const hasCritical = actionFields.some(f => f.value === 1 || f.value === 5);
-            
-            let html = '';
-            
-            // ========================================
-            // EXECUTIVE SUMMARY
-            // ========================================
-            html += `
-                <div class="executive-summary no-break">
-                    <h2>Executive Summary</h2>
-                    <p>${hasCritical 
-                        ? 'Ihre Analyse zeigt punktuelle kritische Belastungen. Es besteht Handlungsbedarf, um Ihre langfristige Vitalität zu sichern.' 
-                        : 'Ihr System zeigt ein stabiles Fundament. Sie verfügen über Ressourcen, um Belastungsphasen gesund zu bewältigen.'
-                    }</p>
-                </div>
-            `;
-            
-            // ========================================
-            // STABILITÄTS-ANKER (Wert 3) - Kompakt
-            // ========================================
-            if (stableAnchors.length > 0) {
-                html += `
-                    <div class="stability-section no-break">
-                        <h2>✓ Ihre Stabilitäts-Anker</h2>
-                        <div class="stability-grid">
-                            ${stableAnchors.map(({ dim }) => `
-                                <div class="stability-item">✓ ${dim.category}</div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // ========================================
-            // HANDLUNGSFELDER (Werte 1, 2, 4, 5) - Analytisch
-            // ========================================
-            if (actionFields.length > 0) {
-                // Sortiere: Kritisch (1,5) vor Abweichung (2,4)
-                actionFields.sort((a, b) => {
-                    const aCritical = a.value === 1 || a.value === 5;
-                    const bCritical = b.value === 1 || b.value === 5;
-                    if (aCritical && !bCritical) return -1;
-                    if (!aCritical && bCritical) return 1;
-                    return 0;
-                });
-                
-                html += `
-                    <div class="action-section">
-                        <h2>Ihre Handlungsfelder</h2>
-                `;
-                
-                actionFields.forEach(({ dim, value, coaching, reflexion }) => {
-                    const isCritical = value === 1 || value === 5;
-                    const label = isCritical ? 'Kritisch' : 'Abweichung';
-                    const labelClass = isCritical ? 'critical' : 'deviation';
-                    
-                    html += `
-                        <div class="action-card ${isCritical ? '' : 'warning'} no-break">
-                            <div class="action-card-header">
-                                <div class="action-card-title">${dim.category}</div>
-                                <div class="action-card-label ${labelClass}">${label} (${value})</div>
-                            </div>
-                            
-                            ${coaching && coaching.text ? `
-                                <div class="action-card-analysis">
-                                    ${coaching.text}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="action-card-insights">
-                                ${coaching && coaching.impuls ? `
-                                    <div class="insight-item">
-                                        <strong>Fokus-Frage:</strong> ${coaching.impuls}
-                                    </div>
-                                ` : ''}
-                                ${reflexion ? `
-                                    <div class="insight-item">
-                                        <strong>Reflexion:</strong> ${reflexion}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-            }
-            
-            container.innerHTML = html;
-        }
-
-
-
         async function generatePDF() {
-            console.log('📄 Starte PDF-Export...');
+            console.log('📄 Starte PDF-Export mit html2pdf.js...');
             
+            // Hole den gesamten Results-Container
             const element = document.querySelector('.results-container');
             if (!element) {
                 console.error('❌ Results-Container nicht gefunden');
@@ -2977,18 +2633,11 @@ Die E-Mail enthält jetzt:
                 pdfButton.disabled = true;
             }
             
-            // WICHTIG: Ersetze die Web-Details temporär mit PDF-Details
-            const detailsContainer = document.getElementById('dimensionsDetails');
-            const originalHTML = detailsContainer.innerHTML;
-            
-            // Rendere PDF-Version
-            renderPDFDetails();
-            
-            // Temporär: Buttons ausblenden
+            // Temporär: Buttons ausblenden für PDF
             const buttons = element.querySelectorAll('button');
             buttons.forEach(btn => btn.style.display = 'none');
             
-            // Aktiviere Coach-View für PDF (Coaching-Impulse sichtbar)
+            // Aktiviere temporär Coach-View für PDF (damit Coaching-Impulse sichtbar sind)
             const wasCoachView = document.body.classList.contains('is-coach-view');
             if (!wasCoachView) {
                 document.body.classList.add('is-coach-view');
@@ -3034,19 +2683,15 @@ Die E-Mail enthält jetzt:
                     pdfButton.disabled = false;
                 }
             } finally {
-                // WICHTIG: Stelle Web-Ansicht wieder her
-                detailsContainer.innerHTML = originalHTML;
-                
                 // Buttons wieder einblenden
                 buttons.forEach(btn => btn.style.display = '');
                 
-                // Coach-View zurücksetzen
+                // Coach-View zurücksetzen wenn es vorher nicht aktiv war
                 if (!wasCoachView) {
                     document.body.classList.remove('is-coach-view');
                 }
             }
         }
-
 
         function getColorForPercentageRGB(percentage) {
             if (percentage <= 15) {
