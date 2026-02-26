@@ -2067,6 +2067,7 @@ Die E-Mail enthält jetzt:
         }
 
         function selectOption(questionIndex, value) {
+            console.log(`✅ Antwort: Dim ${questionIndex} (${dimensions[questionIndex]?.category}) = ${value}`);
             answers[questionIndex] = value;
             renderQuestion(currentQuestion);
             
@@ -2169,6 +2170,19 @@ Die E-Mail enthält jetzt:
 
 
         function showResults() {
+            // ROBUSTE VALIDIERUNG: Prüfe alle 13 Dimensionen
+            console.log('🔒 VALIDIERUNG: Prüfe alle 13 Dimensionen...');
+            let repairedCount = 0;
+            for (let i = 0; i < dimensions.length; i++) {
+                if (answers[i] === undefined || answers[i] === null || answers[i] === '' || isNaN(answers[i])) {
+                    console.warn(`⚠️ Dimension ${i} (${dimensions[i].category}) fehlt - setze auf 3`);
+                    answers[i] = 3;
+                    repairedCount++;
+                }
+            }
+            console.log(`✅ Validierung abgeschlossen. ${repairedCount} Dimension(en) repariert.`);
+            console.log('📊 Finale Antworten:', answers);
+            
             document.getElementById('questionnaire').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'block';
             
@@ -2435,7 +2449,9 @@ Die E-Mail enthält jetzt:
             const kritischeFelder = [];
             
             dimensions.forEach((dim, index) => {
-                const value = answers[index];
+                const value = (answers[index] !== undefined && answers[index] !== null && !isNaN(answers[index])) 
+                    ? answers[index] 
+                    : 3;
                 const data = { dim, index, value, boxText: dim.boxes[value - 1] };
                 
                 if (value === 3) {
@@ -2815,6 +2831,39 @@ Die E-Mail enthält jetzt:
                 console.log('ℹ️ Normaler Start - kein Deep-Link');
                 renderQuestion(0); // Normaler Start - erste Frage
             }
+        };
+
+    
+        // DEBUG-FUNKTION
+        window.debugAnswers = function() {
+            console.log('='.repeat(80));
+            console.log('🔍 DEBUG: Antworten-Analyse');
+            console.log('='.repeat(80));
+            console.log('Antworten:', answers);
+            console.log('Anzahl Dimensionen:', dimensions.length);
+            console.log('Anzahl Antworten:', Object.keys(answers).length);
+            console.log('');
+            
+            const missing = [];
+            for (let i = 0; i < dimensions.length; i++) {
+                const value = answers[i];
+                if (value === undefined || value === null) {
+                    missing.push(i);
+                    console.error(`❌ Dimension ${i} (${dimensions[i].category}): FEHLT`);
+                } else {
+                    console.log(`✅ Dimension ${i} (${dimensions[i].category}): ${value}`);
+                }
+            }
+            
+            console.log('='.repeat(80));
+            if (missing.length === 0) {
+                console.log('✅ Alle Dimensionen OK!');
+            } else {
+                console.error(`❌ ${missing.length} Dimension(en) fehlen!`);
+            }
+            console.log('='.repeat(80));
+            
+            return { total: dimensions.length, answered: Object.keys(answers).length, missing: missing };
         };
 
     </script>
